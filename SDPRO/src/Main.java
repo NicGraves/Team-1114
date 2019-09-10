@@ -24,14 +24,20 @@ public class Main {
 
         //Creating the MenuBar and adding components
         JMenuBar mb = new JMenuBar();
-        JMenu m1 = new JMenu("File");
-        JMenu m2 = new JMenu("Help");
+        JMenu m1 = new JMenu("Project");
+        JMenu m2 = new JMenu("File");
+        JMenu m3 = new JMenu("Help");
         mb.add(m1);
         mb.add(m2);
+        mb.add(m3);
         JMenuItem m11 = new JMenuItem("Open");
         JMenuItem m22 = new JMenuItem("Save as");
-        m1.add(m11);
-        m1.add(m22);
+        m2.add(m11);
+        m2.add(m22);
+        JMenuItem projectDrop1 = new JMenuItem("Open");
+        JMenuItem projectDrop2 = new JMenuItem("Create New");
+        m1.add(projectDrop1);
+        m1.add(projectDrop2);
 
        
         
