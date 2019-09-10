@@ -21,12 +21,12 @@ public class Main {
 
         //Creating the MenuBar and adding components
         JMenuBar mb = new JMenuBar();
-        JMenu m1 = new JMenu("FILE");
+        JMenu m1 = new JMenu("File");
         JMenu m2 = new JMenu("Help");
         mb.add(m1);
         mb.add(m2);
         JMenuItem m11 = new JMenuItem("Open");
-        JButton m22 = new JButton("Save as");
+        JMenuItem m22 = new JMenuItem("Save as");
         m1.add(m11);
         m1.add(m22);
 
@@ -47,7 +47,7 @@ public class Main {
                  final String codeSave = ta.getText();
                  BufferedWriter writer = null;
 				try {
-					writer = new BufferedWriter(new FileWriter("C:\\Users\\USER\\eclipse-workspace\\SDPRO\\samplefile1.txt"));
+					writer = new BufferedWriter(new FileWriter("TestingDirectory\\SampleText.txt"));
 					writer.write(codeSave);
 					writer.close();
 				} catch (IOException e) {
