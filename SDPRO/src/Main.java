@@ -50,13 +50,15 @@ public class Main {
                  final String codeSave = ta.getText();
                  BufferedWriter writer = null;
 				try {
-					String fileName = "TestingDirectory";
-					Path path = Paths.get(fileName);
+					String saveDirectory = "Project_Directory";
+					JFrame frame = new JFrame();
+					String fileName = JOptionPane.showInputDialog(frame, "Enter printer name:");
+					Path path = Paths.get(saveDirectory);
 					if(!Files.exists(path))
 					{
 						Files.createDirectory(path);
 					}
-					writer = new BufferedWriter(new FileWriter("TestingDirectory\\SampleText.txt"));
+					writer = new BufferedWriter(new FileWriter(saveDirectory+"\\"+fileName+".txt"));
 					writer.write(codeSave);
 					writer.close();
 				} catch (IOException e) {
