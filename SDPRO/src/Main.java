@@ -30,10 +30,9 @@ public class Main {
         mb.add(m2);
         JMenuItem m11 = new JMenuItem("Open");
         JMenuItem m22 = new JMenuItem("Save as");
-        JMenuItem m33 = new JMenuItem("Save");
         m1.add(m11);
         m1.add(m22);
-        m1.add(m33);
+
        
         
         // Text Area "Code"
@@ -51,13 +50,15 @@ public class Main {
                  final String codeSave = ta.getText();
                  BufferedWriter writer = null;
 				try {
-					String fileName = "TestingDirectory";
-					Path path = Paths.get(fileName);
+					String saveDirectory = "Project_Directory";
+					JFrame frame = new JFrame();
+					String fileName = JOptionPane.showInputDialog(frame, "Enter file name:");
+					Path path = Paths.get(saveDirectory);
 					if(!Files.exists(path))
 					{
 						Files.createDirectory(path);
 					}
-					writer = new BufferedWriter(new FileWriter("TestingDirectory\\SampleText.txt"));
+					writer = new BufferedWriter(new FileWriter(saveDirectory+"\\"+fileName+".txt"));
 					writer.write(codeSave);
 					writer.close();
 				} catch (IOException e) {
@@ -69,13 +70,6 @@ public class Main {
              
          });
         
-	    m33.addActionListener(new ActionListener()
-	    {
-	    	public void actionPerformed(ActionEvent ae)
-	    	{
-	    		if 
-	    	}
-	    });
         //Creating the console
         JPanel panel = new JPanel();
         JTextArea console = new JTextArea(8,58);
