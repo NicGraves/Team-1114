@@ -2,14 +2,15 @@ import javax.swing.*;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
 
-import com.sun.java.util.jar.pack.Package.File;
-
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 public class Main {
 
 	
@@ -48,8 +49,13 @@ public class Main {
              {
                  final String codeSave = ta.getText();
                  BufferedWriter writer = null;
-                 //TEST TEST TEST
 				try {
+					String fileName = "TestingDirectory";
+					Path path = Paths.get(fileName);
+					if(!Files.exists(path))
+					{
+						Files.createDirectory(path);
+					}
 					writer = new BufferedWriter(new FileWriter("TestingDirectory\\SampleText.txt"));
 					writer.write(codeSave);
 					writer.close();
