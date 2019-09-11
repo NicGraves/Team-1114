@@ -15,8 +15,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 public class Main 
 {
-	protected static String saveDirectory = "Project_Directory";
-	protected static String projectName = "test";
+	protected static String saveDirectory = "Project_Directory"; //Name of the IDE workspace where all projects get saved
+	static String projectName = ""; //name of the current open project
 	       
 	public static void main(String[] args) 
 	{
@@ -34,74 +34,91 @@ public class Main
         menuBar.add(menuItem1);
         menuBar.add(menuItem2);
         menuBar.add(menuItem3);
-        JMenuItem fileDrop1 = new JMenuItem("Open");
-        JMenuItem fileDrop2 = new JMenuItem("Save as");
-        menuItem2.add(fileDrop1);
-        menuItem2.add(fileDrop2);
-        JMenuItem projectDrop1 = new JMenuItem("Open");
-        JMenuItem projectDrop2 = new JMenuItem("Create New");
-        menuItem1.add(projectDrop1);
-        menuItem1.add(projectDrop2);
+        JMenuItem fileOpen = new JMenuItem("Open");
+        JMenuItem fileSaveAs = new JMenuItem("Save as");
+        menuItem2.add(fileOpen);
+        menuItem2.add(fileSaveAs);
+        JMenuItem projectOpen = new JMenuItem("Open");
+        JMenuItem projectCreateNew = new JMenuItem("Create New");
+        menuItem1.add(projectOpen);
+        menuItem1.add(projectCreateNew);
 
        
         
         // Text Area "Code"
-        JPanel textEditor = new JPanel(new BorderLayout());
-        textEditor.setBorder ( new TitledBorder ( new EtchedBorder (), "Text Editor" ) );
-        JTextArea ta = new JTextArea();
-        //textEditor.setPreferredSize(new Dimension(200, 190));
-        JScrollPane scroll = new JScrollPane ( ta );
-	    scroll.setVerticalScrollBarPolicy ( ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED );
+        JPanel textEditor = new JPanel(new BorderLayout()); //create a new JPanel with a border layout
+        textEditor.setBorder ( new TitledBorder ( new EtchedBorder (), "Text Editor" ) ); //create a border around the JPanel with the name "Text Editor"
+        JTextArea ta = new JTextArea(); //Create a new JTextArea
+        JScrollPane scroll = new JScrollPane ( ta ); //Create a new JScrollPane and add the JTextArea
+	    scroll.setVerticalScrollBarPolicy ( ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED ); //Set the scroll bar to only appear when necessary
 	    textEditor.add(scroll, BorderLayout.CENTER);
 	    
-	    fileDrop2.addActionListener(new ActionListener()
-        {
-             public void actionPerformed(ActionEvent ae)
-             {
-                 final String codeSave = ta.getText();
-                 BufferedWriter writer = null;
-				try {
-					JFrame frame = new JFrame();
-					String fileName = JOptionPane.showInputDialog(frame, "Enter file name:");
-					Path path = Paths.get(saveDirectory+"\\"+projectName);
-					if(!Files.exists(path))
-					{
-						Files.createDirectory(path);
-					}
-					writer = new BufferedWriter(new FileWriter(saveDirectory+"\\"+projectName+"\\"+fileName+".txt"));
-					writer.write(codeSave);
-					writer.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-                		     
-                		}
-             
-         });
+	    //Listener for the saveAs button under files
+	    fileSaveAs.addActionListener(new ActionListener()
+		        {
+		             public void actionPerformed(ActionEvent ae)
+		             {
+		                final String codeSave = ta.getText(); //Get the text that is on the TextEditor window
+		                BufferedWriter writer = null; //Create a BufferedWriter
+						try 
+						{
+							JFrame fileNameGetter = new JFrame(); //Create a new JFrame
+							String fileName = JOptionPane.showInputDialog(fileNameGetter, "Enter file name:"); //Create a dialogue box asking for a file name
+							Path path = Paths.get(saveDirectory+"\\"+projectName); //set the path to the IDE workspace in the correct file project
+							if(!Files.exists(path)) //If the specified path does not exist
+							{
+								Files.createDirectory(path); //Create that file path
+							}
+							writer = new BufferedWriter(new FileWriter(saveDirectory+"\\"+projectName+"\\"+fileName+".txt")); //Select the specified folder and add the text file
+							writer.write(codeSave); //Write what was on the Text Editor window to the text file
+							writer.close(); //Close the file writer
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+		                		     
+		                		}
+		             
+		         });
         
-	    projectDrop1.addActionListener(new ActionListener()
+	    //Listener for the Open button under Project
+	    projectOpen.addActionListener(new ActionListener()
 	    		{
 					public void actionPerformed(ActionEvent e) 
 					{
-//						chooser = new JFileChooser(); 
-//					    chooser.setCurrentDirectory(new java.io.File("."));
-//					    chooser.setDialogTitle(choosertitle);
-//					    chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-//					    //
-//					    // disable the "All files" option.
-//					    //
-//					    chooser.setAcceptAllFileFilterUsed(false);
-						JFileChooser jfc = new JFileChooser(saveDirectory+"\\");
-					    jfc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+						JFileChooser jfc = new JFileChooser(saveDirectory+"\\"); //Create a JFileChooser opened to the IDE workspace
+					    jfc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY); //User is only able to select folders
 						int returnValue = jfc.showOpenDialog(null);
 						jfc.setAcceptAllFileFilterUsed(false);
-						if (returnValue == JFileChooser.APPROVE_OPTION)
+						if (returnValue == JFileChooser.APPROVE_OPTION) //If the selected Folder is okay
 						{
-							File selectedFile = jfc.getSelectedFile();
+							File selectedFile = jfc.getSelectedFile(); //Save the folder path that they have selected
 							System.out.println(selectedFile.getAbsolutePath());
 						}
 					}
 	    	
+	    		});
+
+	    projectCreateNew.addActionListener(new ActionListener()
+	    		{
+			    	public void actionPerformed(ActionEvent e) 
+					{
+			    		try 
+						{
+							JFrame frame = new JFrame();
+							projectName = JOptionPane.showInputDialog(frame, "Enter Project name:");
+							Path path = Paths.get(saveDirectory+"\\"+projectName);
+							if(!Files.exists(path))
+							{
+								Files.createDirectory(path);
+							}
+							else
+							{
+								System.out.print("A project with that name already exists");
+							}
+						} catch (IOException s) {
+							s.printStackTrace();
+						}
+					}
 	    		});
 	    
         //Creating the console
