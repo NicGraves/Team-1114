@@ -27,8 +27,6 @@ public class createNewProjectL implements ActionListener
 	{
 		try 
 		{
-			while(save)
-			{
 				JFrame frame = new JFrame();
 				projectName = JOptionPane.showInputDialog(frame, "Enter Project name:");
 				Path path = Paths.get(saveDirectory+"\\"+projectName);
@@ -39,11 +37,14 @@ public class createNewProjectL implements ActionListener
 					op.openNew(exp, projectProperties);
 					save = false;
 				}
-				else
+				else if(projectName.equals(""))
+				{
+					JOptionPane.showMessageDialog(frame, "Please enter a project name.");
+				}
+				else if(Files.exists(path))
 				{
 					JOptionPane.showMessageDialog(frame, "A project with that name already exists. \nPlease select a new name and try again");
 				}
-			}
 		} 
 		catch (IOException s) 
 		{
