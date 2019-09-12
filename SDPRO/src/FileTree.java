@@ -1,5 +1,3 @@
-//Retrieved from https://www.weblogism.com/item/300/use-jtree-to-display-files-in-filesystem-ii
-
 import java.util.Arrays;
 import javax.swing.event.TreeModelListener;
 import javax.swing.tree.TreeModel;
@@ -29,7 +27,8 @@ public class FileTree implements TreeModel
     public Object getChild(Object parent, int index) 
     {
         folderNameGetter parentNode = (folderNameGetter) parent;
-        return new folderNameGetter(parentNode, parentNode.listFiles()[index].getName());
+        return new folderNameGetter(parentNode,
+                            parentNode.listFiles()[index].getName());
     }
 
     /**

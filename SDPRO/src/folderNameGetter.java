@@ -1,5 +1,3 @@
-//Retrieved from http://www.weblogism.com/item/299
-
 public class folderNameGetter extends java.io.File 
 {
 
