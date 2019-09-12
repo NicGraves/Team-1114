@@ -6,18 +6,21 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 
 public class createNewProjectL implements ActionListener 
 {
 	private String projectName;
 	private String saveDirectory;
 	private boolean save = true;
+	protected JPanel projectProperties;
+	openProjectL op = new openProjectL(projectName, null);
 
-	public createNewProjectL(String projectName, String saveDirectory)
+	public createNewProjectL(String projectName, String saveDirectory, JPanel projectProperties)
 	{
-
 		this.projectName = projectName;
 		this.saveDirectory = saveDirectory;
+		this.projectProperties = projectProperties;
 	}
 	
 	public void actionPerformed(ActionEvent e) 
@@ -32,6 +35,8 @@ public class createNewProjectL implements ActionListener
 				if(!Files.exists(path))
 				{
 					Files.createDirectory(path);
+					String exp = path.toString();
+					op.openNew(exp, projectProperties);
 					save = false;
 				}
 				else

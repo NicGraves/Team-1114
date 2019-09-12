@@ -32,7 +32,7 @@ public class Main
         JMenuItem projectClose = new JMenuItem("Close Project"); //Under the project menu item create another menu item called "Close Project"
         projectClose.addActionListener(new projectCloseL(saveDirectory, projectProperties));
         JMenuItem projectCreateNew = new JMenuItem("Create New Project"); //Under the project menu item create another menu item called "Create New Project"
-        projectCreateNew.addActionListener(new createNewProjectL(projectName, saveDirectory));
+        projectCreateNew.addActionListener(new createNewProjectL(projectName, saveDirectory, projectProperties));
         menuItem1.add(projectOpen); //Add the new menu items to the "Project" menu item
         menuItem1.add(projectClose);
         menuItem1.add(projectCreateNew);

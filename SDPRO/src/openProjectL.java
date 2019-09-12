@@ -36,4 +36,14 @@ public class openProjectL implements ActionListener {
             projectProperties.repaint();
 		}
 	}
+	
+	public void openNew(String path, JPanel projectProperties)
+	{
+		FileTree model = new FileTree(path); //Create a new FileTree using the Selected File
+        tree.setModel(model); //Set the model as the FileTree class model   
+        spectralFilesScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS); //Show scroll bars when necessary
+        projectProperties.add(spectralFilesScrollPane); //Add to projectProperties JPanel
+        projectProperties.revalidate();
+        projectProperties.repaint();
+	}
 }
