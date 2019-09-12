@@ -26,17 +26,23 @@ public class Main
         menuBar.add(menuItem1); //Add each menu item to the menu bar in order
         menuBar.add(menuItem2);
         menuBar.add(menuItem3);
-        JMenuItem projectOpen = new JMenuItem("Open"); //Under the project menu item create another menu item called "Open"
+        
+        JMenuItem projectOpen = new JMenuItem("Open Project"); //Under the project menu item create another menu item called "Open Project"
         projectOpen.addActionListener(new openProjectL(saveDirectory, projectProperties));
-        JMenuItem projectCreateNew = new JMenuItem("Create New"); //Under the project menu item create another menu item called "Create New"
+        JMenuItem projectClose = new JMenuItem("Close Project"); //Under the project menu item create another menu item called "Close Project"
+        projectClose.addActionListener(new projectCloseL(saveDirectory, projectProperties));
+        JMenuItem projectCreateNew = new JMenuItem("Create New Project"); //Under the project menu item create another menu item called "Create New Project"
         projectCreateNew.addActionListener(new createNewProjectL(projectName, saveDirectory));
         menuItem1.add(projectOpen); //Add the new menu items to the "Project" menu item
+        menuItem1.add(projectClose);
         menuItem1.add(projectCreateNew);
+        
         JMenuItem fileOpen = new JMenuItem("Open"); //Under the file menu item create another menu item called "Open"
         JMenuItem fileSaveAs = new JMenuItem("Save as"); //Under the file menu item create another menu item called "Save As"
         fileSaveAs.addActionListener(new fileSaveAsL(projectName, saveDirectory, ta));
         menuItem2.add(fileOpen); //Add the new menu items to the "File" menu item
         menuItem2.add(fileSaveAs);
+        
         frame.getContentPane().add(BorderLayout.PAGE_START, menuBar);
 	}
 	
@@ -87,5 +93,4 @@ public class Main
         frame.setLocationRelativeTo ( null );
         frame.setVisible(true);
 	}
-
 }
