@@ -8,8 +8,10 @@ import javax.swing.JTree;
 
 public class openProjectL implements ActionListener {
 	
+	static JTree tree = new JTree(); //Create a new JTree
+    static JScrollPane spectralFilesScrollPane = new JScrollPane(tree); //Create a new JScrollPlane and add the tree
 	private String saveDirectory;
-	private JPanel projectProperties;
+	protected JPanel projectProperties;
 
 	public openProjectL(String saveDirectory, JPanel projectProperties)
 	{
@@ -27,10 +29,7 @@ public class openProjectL implements ActionListener {
 		{
 			String exportPath = jfc.getSelectedFile().getAbsolutePath(); //Get the project Folder path and store it as a string
             FileTree model = new FileTree(exportPath); //Create a new FileTree using the Selected File
-            JTree tree = new JTree(); //Create a new JTree
             tree.setModel(model); //Set the model as the FileTree class model   
-            JScrollPane spectralFilesScrollPane = new JScrollPane(tree); //Create a new JScrollPlane and add the tree
-            //  add(BorderLayout.CENTER, spectralFilesScrollPane);
             spectralFilesScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS); //Show scroll bars when necessary
             projectProperties.add(spectralFilesScrollPane); //Add to projectProperties JPanel
             projectProperties.revalidate();
