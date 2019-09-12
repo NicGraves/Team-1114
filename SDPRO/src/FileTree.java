@@ -1,4 +1,11 @@
-//Retrieved from https://www.weblogism.com/item/300/use-jtree-to-display-files-in-filesystem-ii
+/***************************************************************************************
+*    Title: FileSelectorModel  
+*    Author:  Sébastien Le Callonnec
+*    Date: September 11, 2019
+*    Code version: version 1.0
+*    Availability: http://www.weblogism.com/item/299
+*
+***************************************************************************************/
 
 import java.util.Arrays;
 import javax.swing.event.TreeModelListener;

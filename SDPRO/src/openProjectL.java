@@ -1,10 +1,12 @@
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 
 import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
+import javax.swing.filechooser.FileSystemView;
 
 public class openProjectL implements ActionListener {
 	
@@ -21,7 +23,9 @@ public class openProjectL implements ActionListener {
 
 	public void actionPerformed(ActionEvent e)
 	{
-		JFileChooser jfc = new JFileChooser(saveDirectory+"\\"); //Create a JFileChooser opened to the IDE workspace
+		File root = new File(saveDirectory+"\\");
+		FileSystemView fsv = new SingleRootFileSystemView(root);
+		JFileChooser jfc = new JFileChooser(fsv); //Create a JFileChooser opened to the IDE workspace
 	    jfc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY); //User is only able to select folders
 		int returnValue = jfc.showOpenDialog(null);
 		jfc.setAcceptAllFileFilterUsed(false);

@@ -1,7 +1,6 @@
 import javax.swing.*;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
-import java.awt.*;
 public class Scrap {
 
 	public static void main(String[] args) {
