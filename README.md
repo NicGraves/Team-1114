@@ -1,2 +1,13 @@
 # Team1114
 This is a project that creates a working text editor that is able to compile and run code. Multiple different projects can be saved and each project can have multiple files.
+
+Create new project:
+Project -> Create New Project -> Enter Project Name
+
+Close project:
+Project -> Close Project
+
+Open project:
+Project -> Open Project -> Select in file chooser
+
+Note: creating a project automatically saves it to the text editors designated workspace, so there is no need for a save project button. Create new project is a combination of create and save to streamline user experience. Only a save file button is needed, which will be included in the next iteration.
