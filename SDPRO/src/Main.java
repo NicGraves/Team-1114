@@ -80,6 +80,10 @@ public class Main
 		             
 		         });
         
+	    JPanel projectProperties = new JPanel(new BorderLayout());
+        projectProperties.setPreferredSize(new Dimension(200, 190));
+        projectProperties.setBorder ( new TitledBorder ( new EtchedBorder (), "Project" ) );
+	    
 	    //Listener for the Open button under Project
 	    projectOpen.addActionListener(new ActionListener()
 	    		{
@@ -91,8 +95,16 @@ public class Main
 						jfc.setAcceptAllFileFilterUsed(false);
 						if (returnValue == JFileChooser.APPROVE_OPTION) //If the selected Folder is okay
 						{
-							File selectedFile = jfc.getSelectedFile(); //Save the folder path that they have selected
-							System.out.println(selectedFile.getAbsolutePath());
+							File selectedFile = jfc.getSelectedFile(); //Store the selected Folder Path
+			                FileTree model = new FileTree(selectedFile); //Create a new FileTree using the Selected File
+			                JTree tree = new JTree(); //Create a new JTree
+			                tree.setModel(model); //Set the model as the FileTree class model   
+			                JScrollPane spectralFilesScrollPane = new JScrollPane(tree); //Create a new JScrollPlane and add the tree
+			                //  add(BorderLayout.CENTER, spectralFilesScrollPane);
+			                spectralFilesScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS); //Show scroll bars when necessary
+			                projectProperties.add(spectralFilesScrollPane); //Add to projectProperties JPanel
+			                projectProperties.revalidate();
+			                projectProperties.repaint();
 						}
 					}
 	    	
@@ -135,16 +147,16 @@ public class Main
         output.add(Cscroll);
         
         //side
-        String project = "";
-        JPanel projectProperties = new JPanel(new BorderLayout());
-        projectProperties.setPreferredSize(new Dimension(200, 190));
-        JMenuBar PMenu = new JMenuBar();
-        projectProperties.setBorder ( new TitledBorder ( new EtchedBorder (), "Project" ) );
-        JMenu file = new JMenu(project);
-        projectProperties.add(PMenu);
-        PMenu.add(file);
-        JMenuItem test = new JMenuItem("test");
-        file.add(test);       
+//        String project = "";
+//        JPanel projectProperties = new JPanel(new BorderLayout());
+//        projectProperties.setPreferredSize(new Dimension(200, 190));
+//        JMenuBar PMenu = new JMenuBar();
+//        projectProperties.setBorder ( new TitledBorder ( new EtchedBorder (), "Project" ) );
+//        JMenu file = new JMenu(project);
+//        projectProperties.add(PMenu);
+//        PMenu.add(file);
+//        JMenuItem test = new JMenuItem("test");
+//        file.add(test);       
         
         //Adding Components to the frame.
         frame.getContentPane().add(BorderLayout.LINE_START,projectProperties);
