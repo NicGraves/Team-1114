@@ -83,7 +83,7 @@ public class Main
 	
 	public static void main(String[] args) 
 	{
-		 //Creating the Frame
+		//Creating the Frame
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(1000, 500);
         createMenuBar();
