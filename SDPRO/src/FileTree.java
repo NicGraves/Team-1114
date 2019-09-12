@@ -1,63 +1,81 @@
+import java.util.Arrays;
 import javax.swing.event.TreeModelListener;
 import javax.swing.tree.TreeModel;
-import javax.swing.*;
 import javax.swing.tree.TreePath;
-import java.io.File;
 
-/**
- * The methods in this class allow the JTree component to traverse
- * the file system tree, and display the files and directories.
- **/
-class FileTree implements TreeModel {
+public class FileTree implements TreeModel 
+{
 
-    // We specify the root directory when we create the model.
-    protected File root;
-    public FileTree(File root) {this.root = root;}
+    private folderNameGetter root;
 
-    // The model knows how to return the root object of the tree
-    public Object getRoot() {return root;}
-
-    // Tell JTree whether an object in the tree is a leaf or not
-    public boolean isLeaf(Object node) {return ((File)node).isFile();}
-
-    // Tell JTree how many children a node has
-    public int getChildCount(Object parent) 
+    /**
+     * the constructor defines the root.
+     */
+    public FileTree(String directory) 
     {
-        String[] children = ((File)parent).list();
-        if (children == null) return 0;
-        System.out.println("printing child length:" + children.length);
-        return children.length;
+        root = new folderNameGetter(directory);
     }
 
-    // Fetch any numbered child of a node for the JTree.
-    // Our model returns File objects for all nodes in the tree.  The
-    // JTree displays these by calling the File.toString() method.
+    public Object getRoot() 
+    {
+        return root;
+    }
+
+    /**
+     * returns the <code>parent</code>'s child located at index <code>index</code>.
+     */
     public Object getChild(Object parent, int index) 
     {
-        String[] children = ((File)parent).list();
-        if ((children == null) || (index >= children.length)) return null;
-        return new File((File) parent, children[index]);
+        folderNameGetter parentNode = (folderNameGetter) parent;
+        return new folderNameGetter(parentNode,
+                            parentNode.listFiles()[index].getName());
     }
 
-    // Figure out a child's position in its parent node.
+    /**
+     * returns the number of child.  If the node is not a directory, or its list of children
+     * is null, returns 0.  Otherwise, just return the number of files under the current file.
+     */
+    public int getChildCount(Object parent) 
+    {
+        folderNameGetter parentNode = (folderNameGetter) parent;
+        if (parent == null || !parentNode.isDirectory() || parentNode.listFiles() == null) 
+        {
+            return 0;
+        }
+
+        return parentNode.listFiles().length;
+    }
+
+    /**
+     * returns true if {{@link #getChildCount(Object)} is 0.
+     */
+    public boolean isLeaf(Object node) 
+    {
+        return (getChildCount(node) == 0);
+    }
+
+    /**
+     * return the index of the child in the list of files under <code>parent</code>.
+     */
     public int getIndexOfChild(Object parent, Object child) 
     {
-        String[] children = ((File)parent).list();
-        if (children == null) return -1;
-        String childname = ((File)child).getName();
-        for(int i = 0; i < children.length; i++) {
-            if (childname.equals(children[i])) return i;
-        }
-        return -1;
+        folderNameGetter parentNode = (folderNameGetter) parent;
+        folderNameGetter childNode = (folderNameGetter) child;
+
+        return Arrays.asList(parentNode.list()).indexOf(childNode.getName());
     }
 
-    // This method is only invoked by the JTree for editable trees.
-    // This TreeModel does not allow editing, so we do not implement
-    // this method.  The JTree editable property is false by default.
-    public void valueForPathChanged(TreePath path, Object newvalue) {}
+    // The following methods are not implemented, as we won't need them for this example.
 
-    // Since this is not an editable tree model, we never fire any events,
-    // so we don't actually have to keep track of interested listeners.
-    public void addTreeModelListener(TreeModelListener l) {}
-    public void removeTreeModelListener(TreeModelListener l) {}
+    public void valueForPathChanged(TreePath path, Object newValue) 
+    {
+    }
+
+    public void addTreeModelListener(TreeModelListener l) 
+    {
+    }
+
+    public void removeTreeModelListener(TreeModelListener l) 
+    {
+    }
 }
