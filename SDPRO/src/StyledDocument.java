@@ -35,7 +35,7 @@ public class StyledDocument extends DefaultStyledDocument
        index--;
        while (index >= 0)
        {
-           if (String.valueOf(txt.charAt(index)).matches("\\s"))
+           if (String.valueOf(txt.charAt(index)).matches("\\W"))
                return index;
            index--;
        }
@@ -46,7 +46,7 @@ public class StyledDocument extends DefaultStyledDocument
     {
         while (index < txt.length())
         {
-            if (String.valueOf(txt.charAt(index)).matches("\\s"))
+            if (String.valueOf(txt.charAt(index)).matches("\\W"))
                 return index;
             index++;
         }
@@ -69,18 +69,22 @@ public class StyledDocument extends DefaultStyledDocument
         
         //start at the index of the last nonword character and go to the first nonword character
         while(indexRight <= afterIndex)
-        {
-            if (indexRight == afterIndex || String.valueOf(txt.charAt(indexRight)).matches("\\s"))
+        {            
+            System.out.println(txt.substring(indexLeft, indexRight));
+            if (indexRight == afterIndex || String.valueOf(txt.charAt(indexRight)).matches("\\W"))
             {
-                System.out.println(txt.substring(indexLeft, indexRight));
+                
                 //if the text we're looking at is a keyword, change it's color
-                if (txt.substring(indexLeft, indexRight).matches("(\\W)*(" + blueKeywords + ")"))
+                if (txt.substring(indexLeft, indexRight).matches("(\\s)*(" + blueKeywords + ")"))
+                {
                     setCharacterAttributes(indexLeft, indexRight - indexLeft, blueColor, false);
-                else if(!txt.substring(indexLeft, indexRight).matches("(\\s)*(\\w)*"))
+                    indexLeft = indexRight;
+                }
+                else if(!txt.substring(indexLeft, indexRight).matches("(\\w)"))
                 {
                     for (int x = 0; x < redKeywords.length; x++)
                     {
-                        if (txt.substring(indexLeft, indexRight).matches(redKeywords[x]))
+                        if (txt.substring(indexLeft, indexRight).matches("(\\s)*("+redKeywords[x]+")"))
                         {
                             setCharacterAttributes(indexLeft, indexRight - indexLeft, redColor, false);
                             break;
@@ -88,8 +92,10 @@ public class StyledDocument extends DefaultStyledDocument
                     }
                 }
                 else
+                {
                     setCharacterAttributes(indexLeft, indexRight - indexLeft, blackColor, false);
-                indexLeft = indexRight;//move to the next word
+                    indexLeft = indexRight;//move to the next word
+                }
                 
             }
             indexRight++;
@@ -109,6 +115,17 @@ public class StyledDocument extends DefaultStyledDocument
         
         if (txt.substring(beforeIndex, afterIndex).matches("(\\W)*(" + blueKeywords + ")"))
             setCharacterAttributes(beforeIndex, afterIndex - beforeIndex, blueColor, false);
+        else if(!txt.substring(beforeIndex, afterIndex).matches("(\\s)*(\\w)*"))
+                {
+                    for (int x = 0; x < redKeywords.length; x++)
+                    {
+                        if (txt.substring(beforeIndex, afterIndex).matches(redKeywords[x]))
+                        {
+                            setCharacterAttributes(beforeIndex, afterIndex - beforeIndex, redColor, false);
+                            break;
+                        }
+                    }
+                }
         else
             setCharacterAttributes(beforeIndex, afterIndex - beforeIndex, blackColor, false);
     }
