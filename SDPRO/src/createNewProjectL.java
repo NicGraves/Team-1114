@@ -6,38 +6,34 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 
 public class createNewProjectL implements ActionListener 
 {
-	private String projectName;
+	private String currentProject;
 	private String saveDirectory;
-	private boolean save = true;
-	protected JPanel projectProperties;
-	openProjectL op = new openProjectL(projectName, null);
+	openProjectL op = new openProjectL(currentProject, null);
 
-	public createNewProjectL(String projectName, String saveDirectory, JPanel projectProperties)
+	public createNewProjectL(String currentProject, String saveDirectory)
 	{
-		this.projectName = projectName;
+		this.currentProject = currentProject;
 		this.saveDirectory = saveDirectory;
-		this.projectProperties = projectProperties;
 	}
 	
 	public void actionPerformed(ActionEvent e) 
 	{
+		projectProperties p = new projectProperties();
 		try 
 		{
 				JFrame frame = new JFrame();
-				projectName = JOptionPane.showInputDialog(frame, "Enter Project name:");
-				Path path = Paths.get(saveDirectory+"\\"+projectName);
+				currentProject = JOptionPane.showInputDialog(frame, "Enter Project name:");
+				Path path = Paths.get(saveDirectory+"\\"+currentProject);
 				if(!Files.exists(path))
 				{
 					Files.createDirectory(path);
 					String exp = path.toString();
-					op.openNew(exp, projectProperties);
-					save = false;
+					op.openNew(exp, p.getProjectProperties());
 				}
-				else if(projectName.equals(""))
+				else if(currentProject.equals("") || currentProject != null && !currentProject.isEmpty())
 				{
 					JOptionPane.showMessageDialog(frame, "Please enter a project name.");
 				}

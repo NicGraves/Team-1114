@@ -1,7 +1,6 @@
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -15,18 +14,20 @@ public class openProjectL implements ActionListener {
 	
 	static JTree tree = new JTree(); //Create a new JTree
     static JScrollPane spectralFilesScrollPane = new JScrollPane(tree); //Create a new JScrollPlane and add the tree
+    static String temp;
 	private String saveDirectory;
 	protected JPanel projectProperties;
-	static String temp;
+	String currentProject;
 
-	public openProjectL(String saveDirectory, JPanel projectProperties)
+	public openProjectL(String saveDirectory, String currentProject)
 	{
 		this.saveDirectory = saveDirectory;
-		this.projectProperties = projectProperties;
+		this.currentProject = currentProject;
 	}
 
 	public void actionPerformed(ActionEvent e)
 	{
+		projectProperties p = new projectProperties();
 		UIManager.put("FileChooser.readOnly", Boolean.TRUE);
 		File root = new File(saveDirectory+"\\");
 		FileSystemView fsv = new SingleRootFileSystemView(root);
@@ -42,13 +43,13 @@ public class openProjectL implements ActionListener {
 		}
 		else if (returnValue == JFileChooser.APPROVE_OPTION) //If the selected Folder is okay
 		{
-			String exportPath = jfc.getSelectedFile().getAbsolutePath(); //Get the project Folder path and store it as a string
-            FileTree model = new FileTree(exportPath); //Create a new FileTree using the Selected File
+			currentProject = jfc.getSelectedFile().getAbsolutePath(); //Get the project Folder path and store it as a string
+            FileTree model = new FileTree(currentProject); //Create a new FileTree using the Selected File
             tree.setModel(model); //Set the model as the FileTree class model   
             spectralFilesScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS); //Show scroll bars when necessary
-            projectProperties.add(spectralFilesScrollPane); //Add to projectProperties JPanel
-            projectProperties.revalidate();
-            projectProperties.repaint();
+            p.getProjectProperties().add(spectralFilesScrollPane); //Add to projectProperties JPanel
+            p.getProjectProperties().revalidate();
+            p.getProjectProperties().repaint();
 		}
 	}
 	

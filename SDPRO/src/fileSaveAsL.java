@@ -13,15 +13,12 @@ import javax.swing.JTextArea;
 
 public class fileSaveAsL implements ActionListener 
 {
-	
-	private String projectName;
-	private String saveDirectory;
 	private JTextArea ta;
+	private String currentProject;
 
-	public fileSaveAsL(String projectName, String saveDirectory, JTextArea ta)
+	public fileSaveAsL(String currentProject, String saveDirectory, JTextArea ta)
 	{
-		this.projectName = projectName;
-		this.saveDirectory = saveDirectory;
+		this.currentProject = currentProject;
 		this.ta = ta;
 	}
 	
@@ -31,16 +28,24 @@ public class fileSaveAsL implements ActionListener
            BufferedWriter writer = null; //Create a BufferedWriter
 			try 
 			{
-				JFrame fileNameGetter = new JFrame(); //Create a new JFrame
-				String fileName = JOptionPane.showInputDialog(fileNameGetter, "Enter file name:"); //Create a dialogue box asking for a file name
-				Path path = Paths.get(saveDirectory+"\\"+projectName); //set the path to the IDE workspace in the correct file project
-				if(!Files.exists(path)) //If the specified path does not exist
+				if(currentProject != null && !currentProject.isEmpty()) //If there is a current project open
 				{
-					Files.createDirectory(path); //Create that file path
+					JFrame fileNameGetter = new JFrame(); //Create a new JFrame
+					String fileName = JOptionPane.showInputDialog(fileNameGetter, "Enter file name:"); //Create a dialogue box asking for a file name
+					Path path = Paths.get(currentProject); //set the path to the IDE workspace in the correct file project
+					if(!Files.exists(path)) //If the specified path does not exist
+					{
+						Files.createDirectory(path); //Create that file path
+					}
+					writer = new BufferedWriter(new FileWriter(currentProject+"\\"+fileName+".txt")); //Select the specified folder and add the text file
+					writer.write(codeSave); //Write what was on the Text Editor window to the text file
+					writer.close(); //Close the file writer
 				}
-				writer = new BufferedWriter(new FileWriter(saveDirectory+"\\"+projectName+"\\"+fileName+".txt")); //Select the specified folder and add the text file
-				writer.write(codeSave); //Write what was on the Text Editor window to the text file
-				writer.close(); //Close the file writer
+				else //If no project is open then print an error statement 
+				{
+					JFrame frame = new JFrame();
+					JOptionPane.showMessageDialog(frame, "Please open a project to save a file");
+				}
 			} 
 			catch (IOException a) 
 			{
