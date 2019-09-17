@@ -31,13 +31,13 @@ public class fileCreateNewL implements ActionListener
         try
         {
         	JFrame fileNameGetter = new JFrame(); //Create a new JFrame
-			String fileName = JOptionPane.showInputDialog(fileNameGetter, "Enter file name (.txt is not needed):"); //Create a dialogue box asking for a file name
-			if(fileName.length() != 0 && !Files.exists(Paths.get(currentProject.toString()+"\\"+fileName+".txt"))) //If there is a current project open
+			String fileName = JOptionPane.showInputDialog(fileNameGetter, "Enter file name (.java is not needed):"); //Create a dialogue box asking for a file name
+			if(fileName.length() != 0 && !Files.exists(Paths.get(currentProject.toString()+"\\"+fileName+".java"))) //If there is a current project open
 			{
-				new FileWriter(currentProject+"\\"+fileName+".txt");
+				new FileWriter(currentProject+"\\"+fileName+".java");
 				op.openNew(currentProject.toString(), p.getProjectProperties());
 			}
-			else if(fileName.length() != 0 && Files.exists(Paths.get(currentProject.toString()+"\\"+fileName+".txt")))
+			else if(fileName.length() != 0 && Files.exists(Paths.get(currentProject.toString()+"\\"+fileName+".java")))
 			{
 				JOptionPane.showMessageDialog(frame, "A file with that name already exists in this project");
 			}
