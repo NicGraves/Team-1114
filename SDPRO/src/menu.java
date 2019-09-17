@@ -29,7 +29,7 @@ public class menu
 	    
 	    JMenuItem fileOpen = new JMenuItem("Open"); //Under the file menu item create another menu item called "Open"
 	    JMenuItem fileCreateNew = new JMenuItem("Create New"); //Under the file menu item create another menu item called "Save As"
-	    fileCreateNew.addActionListener(new fileCreateNewL(t.getTextArea(), currentProject));
+	    fileCreateNew.addActionListener(new fileCreateNewL(currentProject));
 	    JMenuItem fileSave = new JMenuItem("Save");
 	    menuItem2.add(fileOpen); //Add the new menu items to the "File" menu item
 	    menuItem2.add(fileSave);

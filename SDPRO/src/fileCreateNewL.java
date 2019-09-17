@@ -1,5 +1,7 @@
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -7,34 +9,34 @@ import java.nio.file.Paths;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-import javax.swing.JTextArea;
-import javax.swing.JTextPane;
 
 public class fileCreateNewL implements ActionListener 
 {
-	private JTextPane ta;
 	StringBuilder currentProject;
 	openProjectL op = new openProjectL(null, null);
 	projectProperties p = new projectProperties();
 	JFrame frame = new JFrame();
 
-	public fileCreateNewL(JTextPane ta, StringBuilder currentProject)
+	public fileCreateNewL(StringBuilder currentProject)
 	{
-		this.ta = ta;
 		this.currentProject = currentProject;
 	}
 	
 	public void actionPerformed(ActionEvent e) 
 	{
-//        final String codeSave = ta.getText(); //Get the text that is on the TextEditor window
-//        BufferedWriter writer = null; //Create a BufferedWriter
+        //final String codeSave = ta.getText(); //Get the text that is on the TextEditor window
+        BufferedWriter writer = null; //Create a BufferedWriter
         try
         {
         	JFrame fileNameGetter = new JFrame(); //Create a new JFrame
 			String fileName = JOptionPane.showInputDialog(fileNameGetter, "Enter file name (.java is not needed):"); //Create a dialogue box asking for a file name
 			if(fileName.length() != 0 && !Files.exists(Paths.get(currentProject.toString()+"\\"+fileName+".java"))) //If there is a current project open
 			{
-				new FileWriter(currentProject+"\\"+fileName+".java");
+				File f = new File(currentProject+"\\"+fileName+".java");
+				f.getParentFile().mkdirs(); 
+				f.createNewFile();
+//				writer = new BufferedWriter(new FileWriter(currentProject+"\\"+fileName+".java"));
+//				writer.close();
 				op.openNew(currentProject.toString(), p.getProjectProperties());
 			}
 			else if(fileName.length() != 0 && Files.exists(Paths.get(currentProject.toString()+"\\"+fileName+".java")))
