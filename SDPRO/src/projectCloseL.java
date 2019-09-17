@@ -1,13 +1,8 @@
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class projectCloseL extends openProjectL implements ActionListener
+public class projectCloseL implements ActionListener
 {
-	public projectCloseL(String saveDirectory, String currentProject) 
-	{
-		super(saveDirectory, currentProject);
-		currentProject = null;
-	}
 
 	public void actionPerformed(ActionEvent e) 
 	{
