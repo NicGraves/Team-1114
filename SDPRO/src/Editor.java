@@ -24,7 +24,7 @@ import java.io.*;
  *
  * @author Jared - PC
  */
-public class TextEditor 
+public class Editor 
 {
         protected static JFrame frame = new JFrame("IDE");
 	protected static JMenuBar menuBar = new JMenuBar(); //Create a JMenuBar
@@ -38,7 +38,8 @@ public class TextEditor
 	
 	//This may not be necessary
 	static String projectName = ""; //name of the current open project
-    public TextEditor()
+        
+    public Editor()
     {
         String redKeywords = "";
         String blueKeywords = "";
@@ -64,6 +65,8 @@ public class TextEditor
         }
         doc = new StyledDocument(blueKeywords, redKeywords);
         ta = new JTextPane(doc);
+        
+        
         
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(1000, 500);
