@@ -1,6 +1,5 @@
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -9,16 +8,17 @@ import java.nio.file.Paths;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
+import javax.swing.JTextPane;
 
 public class fileCreateNewL implements ActionListener 
 {
-	private JTextArea ta;
+	private JTextPane ta;
 	StringBuilder currentProject;
 	openProjectL op = new openProjectL(null, null);
 	projectProperties p = new projectProperties();
 	JFrame frame = new JFrame();
 
-	public fileCreateNewL(JTextArea ta, StringBuilder currentProject)
+	public fileCreateNewL(JTextPane ta, StringBuilder currentProject)
 	{
 		this.ta = ta;
 		this.currentProject = currentProject;
