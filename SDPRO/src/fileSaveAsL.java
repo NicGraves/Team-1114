@@ -1,3 +1,9 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package ProjectPackage;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedWriter;
@@ -9,16 +15,16 @@ import java.nio.file.Paths;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-import javax.swing.JTextArea;
+import javax.swing.JTextPane;
 
 public class fileSaveAsL implements ActionListener 
 {
 	
 	private String projectName;
 	private String saveDirectory;
-	private JTextArea ta;
+	private JTextPane ta;
 
-	public fileSaveAsL(String projectName, String saveDirectory, JTextArea ta)
+	public fileSaveAsL(String projectName, String saveDirectory, JTextPane ta)
 	{
 		this.projectName = projectName;
 		this.saveDirectory = saveDirectory;
