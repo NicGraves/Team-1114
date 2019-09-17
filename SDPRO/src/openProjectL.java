@@ -16,10 +16,10 @@ public class openProjectL implements ActionListener {
     static JScrollPane spectralFilesScrollPane = new JScrollPane(tree); //Create a new JScrollPlane and add the tree
     static String temp;
 	private String saveDirectory;
-	protected JPanel projectProperties;
-	String currentProject;
+	StringBuilder currentProject;
+	menu m = new menu();
 
-	public openProjectL(String saveDirectory, String currentProject)
+	public openProjectL(String saveDirectory, StringBuilder currentProject)
 	{
 		this.saveDirectory = saveDirectory;
 		this.currentProject = currentProject;
@@ -35,21 +35,25 @@ public class openProjectL implements ActionListener {
 	    jfc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY); //User is only able to select folders
 		int returnValue = jfc.showOpenDialog(null);
 		jfc.setAcceptAllFileFilterUsed(false);
-		temp = jfc.getSelectedFile().getAbsolutePath().toString();
-		if(temp.endsWith(saveDirectory))
+		if (returnValue == JFileChooser.APPROVE_OPTION) //If the selected Folder is okay
 		{
-			JFrame frame = new JFrame();
-			JOptionPane.showMessageDialog(frame, "Cannot select the workspace folder. \nPlease select a project folder");
-		}
-		else if (returnValue == JFileChooser.APPROVE_OPTION) //If the selected Folder is okay
-		{
-			currentProject = jfc.getSelectedFile().getAbsolutePath(); //Get the project Folder path and store it as a string
-            FileTree model = new FileTree(currentProject); //Create a new FileTree using the Selected File
-            tree.setModel(model); //Set the model as the FileTree class model   
-            spectralFilesScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS); //Show scroll bars when necessary
-            p.getProjectProperties().add(spectralFilesScrollPane); //Add to projectProperties JPanel
-            p.getProjectProperties().revalidate();
-            p.getProjectProperties().repaint();
+			temp = jfc.getSelectedFile().getAbsolutePath().toString();
+			if(temp.endsWith(saveDirectory))
+			{
+				JFrame frame = new JFrame();
+				JOptionPane.showMessageDialog(frame, "Cannot select the workspace folder. \nPlease select a project folder");
+			}
+			else
+			{
+				currentProject.setLength(0);
+				currentProject.append(jfc.getSelectedFile().getAbsolutePath()); //Get the project Folder path and store it as a string
+	            FileTree model = new FileTree(currentProject.toString()); //Create a new FileTree using the Selected File
+	            tree.setModel(model); //Set the model as the FileTree class model   
+	            spectralFilesScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS); //Show scroll bars when necessary
+	            p.getProjectProperties().add(spectralFilesScrollPane); //Add to projectProperties JPanel
+	            p.getProjectProperties().revalidate();
+	            p.getProjectProperties().repaint();
+			}
 		}
 	}
 	
