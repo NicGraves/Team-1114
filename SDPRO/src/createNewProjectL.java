@@ -9,16 +9,14 @@ import javax.swing.JOptionPane;
 
 public class createNewProjectL implements ActionListener 
 {
+	private String currentProject;
 	private String saveDirectory;
-	openProjectL op = new openProjectL(null, null);
-	StringBuilder currentProject;
-	StringBuilder temp;
-	menu m = new menu();
+	openProjectL op = new openProjectL(currentProject, null);
 
-	public createNewProjectL(String saveDirectory, StringBuilder currentProject)
+	public createNewProjectL(String currentProject, String saveDirectory)
 	{
-		this.saveDirectory = saveDirectory;
 		this.currentProject = currentProject;
+		this.saveDirectory = saveDirectory;
 	}
 	
 	public void actionPerformed(ActionEvent e) 
@@ -27,9 +25,7 @@ public class createNewProjectL implements ActionListener
 		try 
 		{
 				JFrame frame = new JFrame();
-				temp = currentProject;
-				currentProject.setLength(0);
-				currentProject.append(JOptionPane.showInputDialog(frame, "Enter Project name:"));
+				currentProject = JOptionPane.showInputDialog(frame, "Enter Project name:");
 				Path path = Paths.get(saveDirectory+"\\"+currentProject);
 				if(!Files.exists(path))
 				{
@@ -37,17 +33,13 @@ public class createNewProjectL implements ActionListener
 					String exp = path.toString();
 					op.openNew(exp, p.getProjectProperties());
 				}
-				else if(currentProject.length() == 0)
+				else if(currentProject.equals("") || currentProject != null && !currentProject.isEmpty())
 				{
 					JOptionPane.showMessageDialog(frame, "Please enter a project name.");
-					currentProject = temp;
-					temp.setLength(0);
 				}
 				else if(Files.exists(path))
 				{
 					JOptionPane.showMessageDialog(frame, "A project with that name already exists. \nPlease select a new name and try again");
-					currentProject = temp;
-					temp.setLength(0);
 				}
 		} 
 		catch (IOException s) 
