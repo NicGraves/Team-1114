@@ -67,7 +67,7 @@ public class projectProperties
                         String line = "";
                         String l = "";
                         while ((line = br.readLine()) != null) {
-                        	l = line + "\\n" ;
+                        	l += line + "\\n" ;
                         }
                         t.displayText(l);
                         br.close();

@@ -47,7 +47,6 @@ public class textEditor
 	
 	protected void displayText(String line)
 	{
-		
 		ta.setText(line);
 	}
 	
