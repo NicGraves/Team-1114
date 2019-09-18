@@ -6,7 +6,16 @@ public class menu
 {
 	private JMenuBar menuBar = new JMenuBar(); //Create a JMenuBar
 	private textEditor t = new textEditor();
+	private String currentFile = ""; 
 	StringBuilder currentProject = new StringBuilder();
+	
+	public void setFile(String currentFile) 
+	{
+		this.currentFile = currentFile;
+	}
+	public String gitFile() {
+		return currentFile;
+	}
 	
 	public void buildMenu(String saveDirectory)
 	{
@@ -28,9 +37,11 @@ public class menu
 	    menuItem1.add(projectCreateNew);
 	    
 	    JMenuItem fileOpen = new JMenuItem("Open"); //Under the file menu item create another menu item called "Open"
+	    fileOpen.addActionListener(new openFileL(currentProject));
 	    JMenuItem fileCreateNew = new JMenuItem("Create New"); //Under the file menu item create another menu item called "Save As"
-	    fileCreateNew.addActionListener(new fileCreateNewL(t.getTextArea(), currentProject));
+	    fileCreateNew.addActionListener(new fileCreateNewL(currentProject));
 	    JMenuItem fileSave = new JMenuItem("Save");
+	    fileSave.addActionListener(new fileSaveL(currentProject, currentFile));
 	    menuItem2.add(fileOpen); //Add the new menu items to the "File" menu item
 	    menuItem2.add(fileSave);
 	    menuItem2.add(fileCreateNew);

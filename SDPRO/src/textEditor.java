@@ -16,6 +16,11 @@ public class textEditor
 	private JPanel textEditor = new JPanel(new BorderLayout()); //create a new JPanel with a border layout
 	private JTextPane ta; //Create a new JTextPane
 	
+	public textEditor(String contentBuilder) {
+		this.text = contentBuilder;
+	}
+	public textEditor() {
+	}
 	public void buildTextEditor()
 	{
       String redKeywords = "";
@@ -47,7 +52,6 @@ public class textEditor
 	    scroll.setVerticalScrollBarPolicy ( ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED ); //Set the scroll bar to only appear when necessary
 	    textEditor.add(scroll, BorderLayout.CENTER);
 	}
-	
 	protected JPanel getTextEditor()
 	{
 		return textEditor;
