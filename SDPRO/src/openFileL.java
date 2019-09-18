@@ -13,8 +13,9 @@ import javax.swing.JOptionPane;
 
 public class openFileL implements ActionListener {
 	private StringBuilder currentFile;
+	static textEditor t = new textEditor();
 	openProjectL op = new openProjectL(null, null);
-	projectProperties p = new projectProperties();
+	projectProperties p = new projectProperties(null);
 	JFrame frame = new JFrame();
 
 	public openFileL(StringBuilder currentFile)
@@ -35,8 +36,9 @@ public class openFileL implements ActionListener {
 		               String line = "";
 		               String l = "";
 		               while ((line = br.readLine()) != null) {
-		            	   l = line + "\n";
+		            	   l += line + "\n";
 		               }
+		               t.displayText(l);
 		               br.close();
 		           } catch (Exception exc) {
 		               exc.printStackTrace();

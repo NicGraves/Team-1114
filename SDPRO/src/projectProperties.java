@@ -56,27 +56,27 @@ public class projectProperties
         *    Modified slightly by the team to work with our project
         *
         ***************************************************************************************/
-        JLabel status = new JLabel(currentProject.toString());
-        tree.addTreeSelectionListener(new TreeSelectionListener() {
-            public void valueChanged(TreeSelectionEvent e) {
-                folderNameGetter selectedNode = (folderNameGetter) tree.getLastSelectedPathComponent();
-                status.setText(selectedNode.getAbsolutePath());
-                if (selectedNode.isFile()) {
-                    try {
-                        BufferedReader br = new BufferedReader(new FileReader(selectedNode.getAbsolutePath()));
-                        String line = "";
-                        String l = "";
-                        while ((line = br.readLine()) != null) {
-                        	l += line + "\\n" ;
-                        }
-                        t.displayText(l);
-                        br.close();
-                    } catch (Exception exc) {
-                        exc.printStackTrace();
-                    }
-                }
-            }
-        });
+//        JLabel status = new JLabel(currentProject.toString());
+//        tree.addTreeSelectionListener(new TreeSelectionListener() {
+//            public void valueChanged(TreeSelectionEvent e) {
+//                folderNameGetter selectedNode = (folderNameGetter) tree.getLastSelectedPathComponent();
+//                status.setText(selectedNode.getAbsolutePath());
+//                if (selectedNode.isFile()) {
+//                    try {
+//                        BufferedReader br = new BufferedReader(new FileReader(selectedNode.getAbsolutePath()));
+//                        String line = "";
+//                        String l = "";
+//                        while ((line = br.readLine()) != null) {
+//                        	l += line + "\n" ;
+//                        }
+//                        t.displayText(l);
+//                        br.close();
+//                    } catch (Exception exc) {
+//                        exc.printStackTrace();
+//                    }
+//                }
+//            }
+//        });
 //*********************************************************************************************************************************************************************************************************************************
         spectralFilesScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS); //Show scroll bars when necessary
         projectProperties.add(spectralFilesScrollPane); //Add to projectProperties JPanel

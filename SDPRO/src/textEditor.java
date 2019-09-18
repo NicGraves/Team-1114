@@ -13,14 +13,13 @@ import javax.swing.border.TitledBorder;
 public class textEditor 
 {
 	private JPanel textEditor = new JPanel(new BorderLayout()); //create a new JPanel with a border layout
-	private JTextPane ta = new JTextPane(); //Create a new JTextArea
-	private String text = "";
+	private static JTextPane ta = new JTextPane(); //Create a new JTextArea
+	private String text;
 	
 	
 	
 	public textEditor(String contentBuilder) {
 		this.text = contentBuilder;
-		System.out.print(text);
 	}
 	public textEditor() {
 	}
