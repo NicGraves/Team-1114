@@ -1,6 +1,7 @@
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JTextPane;
 
 public class menu 
 {

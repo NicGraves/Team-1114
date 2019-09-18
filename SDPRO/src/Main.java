@@ -4,13 +4,13 @@ import javax.swing.*;
 public class Main 
 {
 	protected static String saveDirectory = "Project_Directory"; //Name of the IDE workspace where all projects get saved
-	protected static String currentProject; //Saves the path of the current open project
+	protected static StringBuilder currentProject; //Saves the path of the current open project
 	
 	public static void main(String[] args) 
 	{
 		JFrame frame = new JFrame("IDE");
 		menu m = new menu();
-		projectProperties p = new projectProperties();
+		projectProperties p = new projectProperties(currentProject);
 		textEditor t = new textEditor();
 		console c = new console();
 		//Creating the Frame

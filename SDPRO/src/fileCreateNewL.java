@@ -1,8 +1,6 @@
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -13,8 +11,7 @@ import javax.swing.JOptionPane;
 public class fileCreateNewL implements ActionListener 
 {
 	StringBuilder currentProject;
-	openProjectL op = new openProjectL(null, null);
-	projectProperties p = new projectProperties();
+	projectProperties p = new projectProperties(currentProject);
 	JFrame frame = new JFrame();
 
 	public fileCreateNewL(StringBuilder currentProject)
@@ -25,7 +22,6 @@ public class fileCreateNewL implements ActionListener
 	public void actionPerformed(ActionEvent e) 
 	{
         //final String codeSave = ta.getText(); //Get the text that is on the TextEditor window
-        BufferedWriter writer = null; //Create a BufferedWriter
         try
         {
         	JFrame fileNameGetter = new JFrame(); //Create a new JFrame
@@ -35,9 +31,7 @@ public class fileCreateNewL implements ActionListener
 				File f = new File(currentProject+"\\"+fileName+".java");
 				f.getParentFile().mkdirs(); 
 				f.createNewFile();
-//				writer = new BufferedWriter(new FileWriter(currentProject+"\\"+fileName+".java"));
-//				writer.close();
-				op.openNew(currentProject.toString(), p.getProjectProperties());
+				p.displayFiles(currentProject);
 			}
 			else if(fileName.length() != 0 && Files.exists(Paths.get(currentProject.toString()+"\\"+fileName+".java")))
 			{
