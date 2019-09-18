@@ -13,8 +13,9 @@ import javax.swing.JOptionPane;
 
 public class openFileL implements ActionListener {
 	private StringBuilder currentFile;
+	static textEditor t = new textEditor();
 	openProjectL op = new openProjectL(null, null);
-	projectProperties p = new projectProperties();
+	projectProperties p = new projectProperties(null);
 	JFrame frame = new JFrame();
 
 	public openFileL(StringBuilder currentFile)
@@ -29,23 +30,20 @@ public class openFileL implements ActionListener {
 		String fileName = JOptionPane.showInputDialog(fileNameGetter, "Enter file name (.java is not needed):"); //Create a dialogue box asking for a file name
 		if(fileName.length() != 0 && Files.exists(Paths.get(currentFile.toString()+"\\"+fileName+".java")))
 		{
-			String contentBuilder = "";
-		    try (BufferedReader br = new BufferedReader(new FileReader(currentFile.toString()+"\\"+fileName+".java")))
-		    {
-		        String sCurrentLine;
-		        while ((sCurrentLine = br.readLine()) != null)
-		        {
-		            contentBuilder += sCurrentLine + "\n";
-		        }
-		    }
-		    catch (IOException e1)
-		    {
-		        e1.printStackTrace();
-		    }
-		    menu set = new menu();
-		    set.setFile(fileName);
-		    textEditor full = new textEditor(contentBuilder);
-		    full.buildTextEditor();
+				   try {
+					   FileReader reader = new FileReader(currentFile.toString()+"\\"+fileName+".java");
+		               BufferedReader br = new BufferedReader(reader);
+		               String line = "";
+		               String l = "";
+		               while ((line = br.readLine()) != null) {
+		            	   l += line + "\n";
+		               }
+		               t.displayText(l);
+		               br.close();
+		           } catch (Exception exc) {
+		               exc.printStackTrace();
+		           }
+		    textEditor full = new textEditor(currentFile.toString()+"\\"+fileName+".java");
 		}
 		else if(fileName.length() == 0)
 		{

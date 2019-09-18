@@ -23,7 +23,7 @@ public class createNewProjectL implements ActionListener
 	
 	public void actionPerformed(ActionEvent e) 
 	{
-		projectProperties p = new projectProperties();
+		projectProperties p = new projectProperties(currentProject);
 		try 
 		{
 				JFrame frame = new JFrame();
@@ -34,8 +34,7 @@ public class createNewProjectL implements ActionListener
 				if(!Files.exists(path))
 				{
 					Files.createDirectory(path);
-					String exp = path.toString();
-					op.openNew(exp, p.getProjectProperties());
+					p.displayFiles(currentProject);
 				}
 				else if(currentProject.length() == 0)
 				{

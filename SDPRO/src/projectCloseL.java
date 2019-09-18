@@ -3,12 +3,10 @@ import java.awt.event.ActionListener;
 
 public class projectCloseL implements ActionListener
 {
+	projectProperties p = new projectProperties(null);
 
 	public void actionPerformed(ActionEvent e) 
 	{
-		projectProperties p = new projectProperties();
-		openProjectL.tree.setModel(null);
-		p.getProjectProperties().revalidate();
-        p.getProjectProperties().repaint();
+		p.clearFiles();
 	}
 }
