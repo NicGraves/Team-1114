@@ -26,6 +26,5 @@ public class Main
         frame.getContentPane().add(BorderLayout.PAGE_END, c.getConsole()); //Add the JPanel to the JFrame
         frame.setLocationRelativeTo ( null );
         frame.setVisible(true);
-        Editor editor = new Editor();
 	}
 }
