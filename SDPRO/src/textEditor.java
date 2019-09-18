@@ -54,6 +54,12 @@ public class textEditor
 	    scroll.setVerticalScrollBarPolicy ( ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED ); //Set the scroll bar to only appear when necessary
 	    textEditor.add(scroll, BorderLayout.CENTER);
 	}
+	
+	protected void displayText(String line)
+	{
+		ta.setText(line);
+	}
+	
 	protected JPanel getTextEditor()
 	{
 		return textEditor;
