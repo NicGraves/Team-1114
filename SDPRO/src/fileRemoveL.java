@@ -41,11 +41,11 @@ public class fileRemoveL implements ActionListener {
 		}
 		else if(fileName.length() == 0)
 		{
-			JOptionPane.showMessageDialog(frame, "Please enter a file name");
+			JOptionPane.showMessageDialog(frame, "Please enter a file name.");
 		}
 		else
 		{
-			JOptionPane.showMessageDialog(frame, "Please open a project to delete a new file");
+			JOptionPane.showMessageDialog(frame, "Please open a project to delete a file.");
 		}
 
 		
