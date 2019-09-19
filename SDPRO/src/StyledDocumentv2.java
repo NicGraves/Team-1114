@@ -100,7 +100,7 @@ public class StyledDocumentv2 extends DefaultStyledDocument
         //start at the index of the last nonword character and go to the first nonword character
         while(indexRight <= afterIndex)
         {            
-            System.out.println(txt.substring(indexLeft, indexRight));
+            //System.out.println(txt.substring(indexLeft, indexRight));
             if (indexRight == afterIndex || String.valueOf(txt.charAt(indexRight)).matches("\\W"))
             {
                 

@@ -58,8 +58,9 @@ public class textEditor
 		ta.setText(line);
 		try {
 			doc.coldLoad();
-		} catch (BadLocationException e) {
-			// TODO Auto-generated catch block
+		} 
+		catch (BadLocationException e) 
+		{
 			e.printStackTrace();
 		}
 	}
