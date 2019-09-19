@@ -1,4 +1,3 @@
-
 import java.awt.BorderLayout;
 import java.io.FileReader;
 import java.io.IOException;
@@ -30,7 +29,7 @@ public class textEditor
 		FileReader in;
 		try
 		{
-			in = new FileReader("Keywords.txt");
+			in = new FileReader("SDPRO\\src\\Keywords.txt");
 	      	int character;
 	      	while ((character = in.read()) != 10 && character != -1)
 	      	{
