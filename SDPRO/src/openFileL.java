@@ -1,12 +1,9 @@
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.FileReader;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.awt.event.ActionEvent;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
@@ -24,9 +21,7 @@ public class openFileL implements ActionListener {
 	}
 	public void actionPerformed(ActionEvent e)
 	{
-		  //final String codeSave = ta.getText(); //Get the text that is on the TextEditor window
-        BufferedWriter writer = null; //Create a BufferedWriter
-        JFrame fileNameGetter = new JFrame(); //Create a new JFrame
+		  JFrame fileNameGetter = new JFrame(); //Create a new JFrame
 		String fileName = JOptionPane.showInputDialog(fileNameGetter, "Enter file name (.java is not needed):"); //Create a dialogue box asking for a file name
 		if(fileName.length() != 0 && Files.exists(Paths.get(currentFile.toString()+"\\"+fileName+".java")))
 		{

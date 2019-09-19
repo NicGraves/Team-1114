@@ -12,8 +12,8 @@ import javax.swing.border.TitledBorder;
 public class textEditor 
 {
 	private JPanel textEditor = new JPanel(new BorderLayout()); //create a new JPanel with a border layout
-	private static JTextPane ta = new JTextPane(); //Create a new JTextArea
-	private String text = "";
+	static JTextPane ta = new JTextPane(); //Create a new JTextArea
+	static String text = "";
 	
 	
 	
