@@ -43,9 +43,12 @@ public class menu
 	    fileCreateNew.addActionListener(new fileCreateNewL(currentProject));
 	    JMenuItem fileSave = new JMenuItem("Save");
 	    fileSave.addActionListener(new fileSaveL(currentProject, currentFile));
+	    JMenuItem fileRemove = new JMenuItem("Remove");
+	    fileRemove.addActionListener(new fileRemoveL(currentProject));
 	    menuItem2.add(fileOpen); //Add the new menu items to the "File" menu item
 	    menuItem2.add(fileSave);
 	    menuItem2.add(fileCreateNew);
+	    menuItem2.add(fileRemove);
 	}
 	
 	protected JMenuBar getJMenuBar()
