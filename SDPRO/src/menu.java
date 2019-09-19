@@ -45,8 +45,11 @@ public class menu
 	    fileSave.addActionListener(new fileSaveL(currentProject));
 	    JMenuItem fileRemove = new JMenuItem("Remove");
 	    fileRemove.addActionListener(new fileRemoveL(currentProject));
+	    JMenuItem fileClose = new JMenuItem("Close");
+	    fileClose.addActionListener(new fileCloseL());
 	    menuItem2.add(fileOpen); //Add the new menu items to the "File" menu item
 	    menuItem2.add(fileSave);
+	    menuItem2.add(fileClose);
 	    menuItem2.add(fileCreateNew);
 	    menuItem2.add(fileRemove);
 	}
