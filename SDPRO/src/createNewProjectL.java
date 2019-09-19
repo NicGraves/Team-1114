@@ -6,44 +6,47 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 
 public class createNewProjectL implements ActionListener 
 {
-	private String projectName;
 	private String saveDirectory;
-	private boolean save = true;
-	protected JPanel projectProperties;
-	openProjectL op = new openProjectL(projectName, null);
+	openProjectL op = new openProjectL(null, null);
+	StringBuilder currentProject;
+	StringBuilder temp;
+	menu m = new menu();
 
-	public createNewProjectL(String projectName, String saveDirectory, JPanel projectProperties)
+	public createNewProjectL(String saveDirectory, StringBuilder currentProject)
 	{
-		this.projectName = projectName;
 		this.saveDirectory = saveDirectory;
-		this.projectProperties = projectProperties;
+		this.currentProject = currentProject;
 	}
 	
 	public void actionPerformed(ActionEvent e) 
 	{
+		projectProperties p = new projectProperties(currentProject);
 		try 
 		{
 				JFrame frame = new JFrame();
-				projectName = JOptionPane.showInputDialog(frame, "Enter Project name:");
-				Path path = Paths.get(saveDirectory+"\\"+projectName);
+				temp = currentProject;
+				currentProject.setLength(0);
+				currentProject.append(JOptionPane.showInputDialog(frame, "Enter Project name:"));
+				Path path = Paths.get(saveDirectory+"\\"+currentProject);
 				if(!Files.exists(path))
 				{
 					Files.createDirectory(path);
-					String exp = path.toString();
-					op.openNew(exp, projectProperties);
-					save = false;
+					p.displayFiles(currentProject);
 				}
-				else if(projectName.equals(""))
+				else if(currentProject.length() == 0)
 				{
 					JOptionPane.showMessageDialog(frame, "Please enter a project name.");
+					currentProject = temp;
+					temp.setLength(0);
 				}
 				else if(Files.exists(path))
 				{
 					JOptionPane.showMessageDialog(frame, "A project with that name already exists. \nPlease select a new name and try again");
+					currentProject = temp;
+					temp.setLength(0);
 				}
 		} 
 		catch (IOException s) 

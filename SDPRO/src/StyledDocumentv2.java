@@ -1,4 +1,3 @@
-package ProjectPackage;
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -38,7 +37,7 @@ public class StyledDocumentv2 extends DefaultStyledDocument
             for(int x = 0; x < txt.length(); x++)
             {
                 //if the character is a space, it means we are at the end of a word and should check if it is a keyword
-                if(txt.charAt(x) == ' ')
+                if(txt.charAt(x) == ' ' || String.valueOf(txt.charAt(x)).matches("\\W"))
                 {
                     if(txt.substring(indexLeft, indexRight).matches("(\\W)*(" + blueKeywords + ")"))
                     {
