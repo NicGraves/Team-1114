@@ -8,7 +8,6 @@ public class fileCloseL implements ActionListener {
 		String contentBuilder = "";
 		textEditor text = new textEditor(contentBuilder);
 		text.displayText(contentBuilder);
-
 	}
 
 }

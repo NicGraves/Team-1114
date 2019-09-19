@@ -17,6 +17,7 @@ public class textEditor
 	
 	
 	
+	@SuppressWarnings("static-access")
 	public textEditor(String contentBuilder) {
 		this.text = contentBuilder;
 	}

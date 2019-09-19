@@ -1,12 +1,10 @@
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
-import javax.swing.JTextPane;
 
 public class menu 
 {
 	private JMenuBar menuBar = new JMenuBar(); //Create a JMenuBar
-	private textEditor t = new textEditor();
 	private String currentFile = ""; 
 	StringBuilder currentProject = new StringBuilder();
 	
@@ -39,14 +37,14 @@ public class menu
 	    
 	    JMenuItem fileOpen = new JMenuItem("Open"); //Under the file menu item create another menu item called "Open"
 	    fileOpen.addActionListener(new openFileL(currentProject));
-	    JMenuItem fileCreateNew = new JMenuItem("Create New"); //Under the file menu item create another menu item called "Save As"
-	    fileCreateNew.addActionListener(new fileCreateNewL(currentProject));
 	    JMenuItem fileSave = new JMenuItem("Save");
 	    fileSave.addActionListener(new fileSaveL(currentProject));
-	    JMenuItem fileRemove = new JMenuItem("Remove");
-	    fileRemove.addActionListener(new fileRemoveL(currentProject));
 	    JMenuItem fileClose = new JMenuItem("Close");
 	    fileClose.addActionListener(new fileCloseL());
+	    JMenuItem fileCreateNew = new JMenuItem("Create New"); 
+	    fileCreateNew.addActionListener(new fileCreateNewL(currentProject));
+	    JMenuItem fileRemove = new JMenuItem("Remove");
+	    fileRemove.addActionListener(new fileRemoveL(currentProject));
 	    menuItem2.add(fileOpen); //Add the new menu items to the "File" menu item
 	    menuItem2.add(fileSave);
 	    menuItem2.add(fileClose);

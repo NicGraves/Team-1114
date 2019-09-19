@@ -18,6 +18,7 @@ public class fileSaveL implements ActionListener
 		this.currentProject = currentProject;
 	}
 
+	@SuppressWarnings("static-access")
 	public void actionPerformed(ActionEvent e) 
 	{
 		if(currentProject.length() != 0 && full.text.length() != 0)
@@ -38,7 +39,7 @@ public class fileSaveL implements ActionListener
 			}
 			JOptionPane.showMessageDialog(frame, "File saved");
 		}
-		else if(full.text.length() == 0)
+		else if(currentProject.length() != 0 && full.text.length() == 0)
 		{
 			JOptionPane.showMessageDialog(frame, "No file to save");
 		}
