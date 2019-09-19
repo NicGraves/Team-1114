@@ -1,5 +1,4 @@
 import java.awt.BorderLayout;
-import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 
@@ -13,14 +12,13 @@ import javax.swing.border.TitledBorder;
 public class textEditor 
 {
 	private JPanel textEditor = new JPanel(new BorderLayout()); //create a new JPanel with a border layout
-	private JTextPane ta = new JTextPane(); //Create a new JTextArea
+	private static JTextPane ta = new JTextPane(); //Create a new JTextArea
 	private String text = "";
 	
 	
 	
 	public textEditor(String contentBuilder) {
 		this.text = contentBuilder;
-		System.out.print(text);
 	}
 	public textEditor() {
 	}
@@ -53,6 +51,10 @@ public class textEditor
         JScrollPane scroll = new JScrollPane ( ta ); //Create a new JScrollPane and add the JTextArea
 	    scroll.setVerticalScrollBarPolicy ( ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED ); //Set the scroll bar to only appear when necessary
 	    textEditor.add(scroll, BorderLayout.CENTER);
+	}
+	protected void displayText(String line)
+	{
+		ta.setText(line);
 	}
 	protected JPanel getTextEditor()
 	{
