@@ -11,24 +11,42 @@ public class fileSaveL implements ActionListener
 {
 	textEditor full = new textEditor();
 	JFrame frame = new JFrame();
+	StringBuilder currentProject;
+	
+	public fileSaveL(StringBuilder currentProject)
+	{
+		this.currentProject = currentProject;
+	}
 
 	public void actionPerformed(ActionEvent e) 
 	{
-		String[] lines = full.ta.getText().split("\\n");
-		try 
+		if(currentProject.length() != 0 && full.text.length() != 0)
 		{
-			BufferedWriter writer = new BufferedWriter(new FileWriter(full.text));
-			for(int i = 0 ; i< lines.length; i++)
+			String[] lines = full.ta.getText().split("\\n");
+			try 
 			{
-				writer.write(lines[i] + "\n");
+				BufferedWriter writer = new BufferedWriter(new FileWriter(full.text));
+				for(int i = 0 ; i< lines.length; i++)
+				{
+					writer.write(lines[i] + "\n");
+				}
+			    writer.close();
+			} 
+			catch (IOException e1) 
+			{
+				e1.printStackTrace();
 			}
-		    writer.close();
-		} 
-		catch (IOException e1) 
-		{
-			e1.printStackTrace();
+			JOptionPane.showMessageDialog(frame, "File saved");
 		}
-		JOptionPane.showMessageDialog(frame, "File saved");
+		else if(full.text.length() == 0)
+		{
+			JOptionPane.showMessageDialog(frame, "No file to save");
+		}
+		else
+		{
+			JOptionPane.showMessageDialog(frame, "Open a project");
+		}
+		
     }
 		
 	

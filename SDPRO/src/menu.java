@@ -42,7 +42,7 @@ public class menu
 	    JMenuItem fileCreateNew = new JMenuItem("Create New"); //Under the file menu item create another menu item called "Save As"
 	    fileCreateNew.addActionListener(new fileCreateNewL(currentProject));
 	    JMenuItem fileSave = new JMenuItem("Save");
-	    fileSave.addActionListener(new fileSaveL());
+	    fileSave.addActionListener(new fileSaveL(currentProject));
 	    JMenuItem fileRemove = new JMenuItem("Remove");
 	    fileRemove.addActionListener(new fileRemoveL(currentProject));
 	    menuItem2.add(fileOpen); //Add the new menu items to the "File" menu item

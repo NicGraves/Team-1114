@@ -10,7 +10,6 @@ import javax.swing.JOptionPane;
 
 public class openFileL implements ActionListener {
 	private StringBuilder currentFile;
-	static textEditor t = new textEditor();
 	openProjectL op = new openProjectL(null, null);
 	static textEditor t = new textEditor();
 	projectProperties p = new projectProperties(currentFile);
@@ -32,9 +31,9 @@ public class openFileL implements ActionListener {
 		               String line = "";
 		               String l = "";
 		               while ((line = br.readLine()) != null) {
-		            	   l += line + "\n";
-		               }
-		               t.displayText(l);
+		            		l += line + "\n" ;
+                       }
+                       t.displayText(l);
 		               br.close();
 		           } catch (Exception exc) {
 		               exc.printStackTrace();

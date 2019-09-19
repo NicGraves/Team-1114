@@ -33,6 +33,7 @@ public class fileRemoveL implements ActionListener {
 			   {
 				   File file = new File(currentFile.toString()+"\\"+fileName+".java");
 				   file.delete();
+				   p.displayFiles(currentFile);
 			   }
 			   catch (Exception exc) 
 			   {
