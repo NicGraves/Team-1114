@@ -31,7 +31,6 @@ public class StyledDocument extends DefaultStyledDocument
         for(int x = 0; x < redKeywords.length; x++)
             redKeystring += redKeywords[x];
     }
-
     //finds the first nonword character in the input text before the index given
     private int firstNonwordChar (String txt, int index)
     {
@@ -57,10 +56,19 @@ public class StyledDocument extends DefaultStyledDocument
     }
     private int firstNonkeyChar (String txt, int index)
     {
+       boolean match;
        index--;
        while (index >= 0)
        {
-           if (String.valueOf(txt.charAt(index)).matches("\\s"))
+           match = false;
+           for(String s : redKeywords)
+           {
+               if(txt.charAt(index) == (s.charAt(s.length()-1)))
+               {
+                   match = true;
+               }
+           }
+           if (!match)
                 return index + 1;
            index--;
        }
@@ -68,11 +76,20 @@ public class StyledDocument extends DefaultStyledDocument
     }
     private int lastNonkeyChar (String txt, int index)
     {
+        boolean match = false;
         while (index < txt.length())
         {
-            if (String.valueOf(txt.charAt(index)).matches("\\s"))
+           match = false;
+           for(String s : redKeywords)
+           {
+               if(txt.charAt(index) == (s.charAt(s.length()-1)))
+               {
+                   match = true;
+               }
+           }
+           if (!match)
                 return index;
-            index++;
+           index++;
         }
         return index;
     }
@@ -83,9 +100,6 @@ public class StyledDocument extends DefaultStyledDocument
         super.insertString(offset, str, a);
         
         String txt = getText(0, getLength()); //get all text in the box
-        
-
-        
         //Set up indices to find blue keywords
         int beforeIndexBlue = firstNonwordChar(txt, offset);
         if(beforeIndexBlue < 0)
@@ -93,7 +107,6 @@ public class StyledDocument extends DefaultStyledDocument
         int afterIndexBlue = lastNonwordChar(txt, offset + str.length());
         int indexLeftBlue = beforeIndexBlue;
         int indexRightBlue = beforeIndexBlue;
-        
         //Set up indices to find red keywords
         int beforeIndexRed = firstNonkeyChar(txt, offset);
         if(beforeIndexRed < 0)
@@ -121,28 +134,33 @@ public class StyledDocument extends DefaultStyledDocument
             }
             indexRightBlue++;
         }
-//        while(indexRightRed <= afterIndexRed)
-//        {
-//            if(indexRightRed == afterIndexRed || String.valueOf(txt.charAt(indexRightRed)).matches("^" + redKeystring))
-//            {
-//                System.out.println(txt.substring(indexLeftRed, indexRightRed));
-//                //if the text we're looking at is a keyword, change it's color
-//                for (int x = 0; x < redKeywords.length; x++)
-//                {
-//                    if (txt.substring(indexLeftRed, indexRightRed).matches("(\\s)*("+redKeywords[x]+")"))
-//                    {
-//                        setCharacterAttributes(indexLeftRed, indexRightRed - indexLeftRed, redColor, false);
-//                        break;
-//                    }
-//                    else
-//                    {
-//                        setCharacterAttributes(indexLeftRed, indexRightRed - indexLeftRed, blackColor, false);  
-//                    }
-//                    indexLeftRed = indexRightRed;//move to the next word
-//                }
-//            }
-//            indexRightRed++;
-//        }
+        boolean match;
+        while(indexRightRed <= afterIndexRed)
+        {
+            match = false;
+            for(String s : redKeywords)
+            {
+                if(indexRightRed == afterIndexRed || txt.charAt(indexRightRed) == s.charAt(s.length()-1))
+                {
+                    match = true;
+                }
+            }
+            if(indexRightRed == afterIndexRed || !match)
+            {
+                //System.out.println(txt.substring(indexLeftRed, indexRightRed));
+                //if the text we're looking at is a keyword, change it's color
+                for (String redKeyword : redKeywords) 
+                {
+                    if (txt.substring(indexLeftRed, indexRightRed).matches("(\\s)*" + redKeyword)) 
+                    {
+                        setCharacterAttributes(indexLeftRed, indexRightRed - indexLeftRed, redColor, false);
+                        break;
+                    }                   
+                }
+                indexLeftRed = indexRightRed;//move to the next word
+            }
+            indexRightRed++;
+        }
     }
     
     @Override
@@ -151,27 +169,32 @@ public class StyledDocument extends DefaultStyledDocument
         super.remove(offset,length);
         
         String txt = getText(0, getLength());
+        //Set up blue indices
         int beforeIndex = firstNonwordChar(txt, offset);
         if (beforeIndex < 0)
             beforeIndex = 0;
         int afterIndex = lastNonwordChar(txt, offset);
-        
+        //Set up red indices
+        int beforeIndexRed = firstNonkeyChar(txt, offset);
+        if(beforeIndexRed < 0)
+            beforeIndexRed = 0;
+        int afterIndexRed = lastNonkeyChar(txt, offset);
+        int i;
+        for(i = 0; i < redKeywords.length; i++)
+        {
+            if(txt.substring(beforeIndexRed, afterIndexRed).matches("(\\s*)" + redKeywords[i]))
+                break;
+        }
         if (txt.substring(beforeIndex, afterIndex).matches("(\\W)*(" + blueKeywords + ")"))
             setCharacterAttributes(beforeIndex, afterIndex - beforeIndex, blueColor, false);
-
-//        else if(!txt.substring(beforeIndex, afterIndex).matches("(\\w)"))
-//                {
-//                    for (int x = 0; x < redKeywords.length; x++)
-//                    {
-//                        if (txt.substring(beforeIndex, afterIndex).matches("(\\s)*("+redKeywords[x]+")"))
-//                        {
-//                            setCharacterAttributes(beforeIndex, afterIndex - beforeIndex, redColor, false);
-//                            setCharacterAttributes(afterIndex, 0, blackColor, false);
-//                            break;
-//                        }
-//                    }
-//                }
+        else if(i != redKeywords.length)
+            {
+                setCharacterAttributes(beforeIndexRed, afterIndexRed - beforeIndexRed, redColor, false);
+            }
         else
+        {
             setCharacterAttributes(beforeIndex, afterIndex - beforeIndex, blackColor, false);
+            setCharacterAttributes(beforeIndexRed, afterIndexRed - beforeIndexRed, blackColor, false);
+        }
     }
 }
