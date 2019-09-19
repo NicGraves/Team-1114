@@ -36,6 +36,7 @@ public class fileRemoveL implements ActionListener {
 					   full.displayText(contentBuilder);
 				   }
 				   p.displayFiles(currentFile);
+				   JOptionPane.showMessageDialog(frame, fileName+".java has been deleted");
 			   }
 			   catch (Exception exc) 
 			   {

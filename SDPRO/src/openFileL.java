@@ -38,7 +38,8 @@ public class openFileL implements ActionListener {
 		           } catch (Exception exc) {
 		               exc.printStackTrace();
 		           }
-		    textEditor full = new textEditor(currentFile.toString()+"\\"+fileName+".java");
+				   JOptionPane.showMessageDialog(frame, fileName+".java opened");
+				   textEditor full = new textEditor(currentFile.toString()+"\\"+fileName+".java");
 		}
 		else if(fileName.length() == 0)
 		{

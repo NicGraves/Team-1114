@@ -8,14 +8,14 @@ import javax.swing.JTextPane;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
+import javax.swing.text.BadLocationException;
 
 public class textEditor 
 {
 	private JPanel textEditor = new JPanel(new BorderLayout()); //create a new JPanel with a border layout
 	static JTextPane ta = new JTextPane(); //Create a new JTextArea
 	static String text = "";
-	
-	
+	StyledDocumentv2 doc;
 	
 	@SuppressWarnings("static-access")
 	public textEditor(String contentBuilder) {
@@ -46,7 +46,7 @@ public class textEditor
 		{
 			e.printStackTrace();
 		}
-		StyledDocument doc = new StyledDocument(blueKeywords, redKeywords);
+		doc = new StyledDocumentv2(blueKeywords, redKeywords);
 		ta = new JTextPane(doc);
 		textEditor.setBorder ( new TitledBorder ( new EtchedBorder (), "Text Editor" ) ); //create a border around the JPanel with the name "Text Editor"
         JScrollPane scroll = new JScrollPane ( ta ); //Create a new JScrollPane and add the JTextArea
@@ -56,6 +56,12 @@ public class textEditor
 	protected void displayText(String line)
 	{
 		ta.setText(line);
+		try {
+			doc.coldLoad();
+		} catch (BadLocationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	protected JPanel getTextEditor()
 	{
