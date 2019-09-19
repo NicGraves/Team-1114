@@ -155,7 +155,9 @@ public class StyledDocument extends DefaultStyledDocument
                     {
                         setCharacterAttributes(indexLeftRed, indexRightRed - indexLeftRed, redColor, false);
                         break;
-                    }                   
+                    }
+                    if (txt.substring(indexLeftRed, indexRightRed).length() > 1)
+                        setCharacterAttributes(indexLeftRed, indexRightRed - indexLeftRed, blackColor, false);
                 }
                 indexLeftRed = indexRightRed;//move to the next word
             }
