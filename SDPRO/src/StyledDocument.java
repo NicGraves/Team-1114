@@ -21,33 +21,81 @@ public class StyledDocument extends DefaultStyledDocument
     private final AttributeSet redColor = style.addAttribute(style.getEmptySet(), StyleConstants.Foreground, Color.RED);
     private final AttributeSet blueColor = style.addAttribute(style.getEmptySet(), StyleConstants.Foreground, Color.BLUE);
     private final AttributeSet blackColor = style.addAttribute(style.getEmptySet(), StyleConstants.Foreground, Color.BLACK);
-    private String blueKeywords;
-    private String[] redKeywords;
+    private final String blueKeywords;
+    private final String[] redKeywords;
     public StyledDocument(String blue, String red)
     {
         blueKeywords = blue;
-        redKeywords = red.split("\\w");
+        redKeywords = red.split("\\w"); //splits up the text file red keywords on word characters [a-zA-z0-9_]
     }
-    //finds the last nonword character in the input text starting at the index given
-    private int lastNonwordChar (String txt, int index)
+    //finds the first nonword character in the input text before the index given, used for blue keywords
+    private int firstNonwordChar (String txt, int index)
     {
        index--;
        while (index >= 0)
        {
            if (String.valueOf(txt.charAt(index)).matches("\\W"))
-               return index;
+               return index+1;
            index--;
        }
        return index;
     }
-    //finds the first nonword character in the input text starting at the index given
-    private int firstNonwordChar(String txt, int index)
+    //finds the last nonword character in the input text after the index given, used for blue keywords
+    private int lastNonwordChar(String txt, int index)
     {
         while (index < txt.length())
         {
             if (String.valueOf(txt.charAt(index)).matches("\\W"))
                 return index;
             index++;
+        }
+        return index;
+    }
+    //finds the first non-redkeyword character in the input text before the index given, used for red keywords
+    private int firstNonkeyChar (String txt, int index)
+    {
+       boolean match;
+       index--;
+       while (index >= 0)
+       {
+           match = false;
+           //we need to check against each keyword to find out if there's a match or not
+           for(String s : redKeywords)
+           {
+               //if there's a match, it means we haven't hit the end yet
+               //we must check the red keywords in this way because many of these keywords are regex metacharacters and must be dereferenced with \
+               if(txt.charAt(index) == (s.charAt(s.length()-1)))
+               {
+                   match = true;
+               }
+           }
+           //if we get no matches, we've hit the end and can return
+           if (!match)
+                return index + 1;
+           index--;
+       }
+       return index;
+    }
+    //finds the last non-redkeyword character in the input text before the input give, used for red keywords
+    private int lastNonkeyChar (String txt, int index)
+    {
+        boolean match = false;
+        while (index < txt.length())
+        {
+           match = false;
+           //we need to check against each keyword to find out if there's a match or not
+           for(String s : redKeywords)
+           {
+               //if there's a match, it means we haven't hit the end yet
+               if(txt.charAt(index) == (s.charAt(s.length()-1)))
+               {
+                   match = true;
+               }
+           }
+           //if we get no matches, we've hit the end and can return
+           if (!match)
+                return index;
+           index++;
         }
         return index;
     }
@@ -59,45 +107,90 @@ public class StyledDocument extends DefaultStyledDocument
         super.insertString(offset, str, a);
         
         String txt = getText(0, getLength()); //get all text in the box
-        int beforeIndex = lastNonwordChar(txt, offset);
-        if(beforeIndex < 0)
-            beforeIndex = 0;
-        int afterIndex = firstNonwordChar(txt, offset + str.length());
-        int indexLeft = beforeIndex;
-        int indexRight = beforeIndex;
         
-        //start at the index of the last nonword character and go to the first nonword character
-        while(indexRight <= afterIndex)
-        {            
-            System.out.println(txt.substring(indexLeft, indexRight));
-            if (indexRight == afterIndex || String.valueOf(txt.charAt(indexRight)).matches("\\W"))
-            {
-                
+        //Set up indices to find blue keywords
+        int beforeIndexBlue = firstNonwordChar(txt, offset);
+        if(beforeIndexBlue < 0) beforeIndexBlue = 0;
+        int afterIndexBlue = lastNonwordChar(txt, offset + str.length());
+        int indexLeftBlue = beforeIndexBlue;
+        int indexRightBlue = beforeIndexBlue;
+        
+        //Set up indices to find red keywords
+        int beforeIndexRed = firstNonkeyChar(txt, offset);
+        if(beforeIndexRed < 0) beforeIndexRed = 0;
+        int afterIndexRed = lastNonkeyChar(txt, offset + str.length());
+        int indexLeftRed = beforeIndexRed;
+        int indexRightRed = beforeIndexRed;
+        
+        //start at the index of the first nonword character and go to the last nonword character to check for blue keywords
+        while(indexRightBlue <= afterIndexBlue)
+        {
+            //if we've hit the end or we reach a nonword character, we need to check if the word being typed is a keyword
+            if (indexRightBlue == afterIndexBlue || String.valueOf(txt.charAt(indexRightBlue)).matches("\\W"))
+            { 
                 //if the text we're looking at is a keyword, change it's color
-                if (txt.substring(indexLeft, indexRight).matches("(\\s)*(" + blueKeywords + ")"))
+                if (txt.substring(indexLeftBlue, indexRightBlue).matches("(\\s)*(\\W)*(" + blueKeywords + ")"))
                 {
-                    setCharacterAttributes(indexLeft, indexRight - indexLeft, blueColor, false);
-                    indexLeft = indexRight;
-                }
-                else if(!txt.substring(indexLeft, indexRight).matches("(\\w)"))
-                {
-                    for (int x = 0; x < redKeywords.length; x++)
-                    {
-                        if (txt.substring(indexLeft, indexRight).matches("(\\s)*("+redKeywords[x]+")"))
-                        {
-                            setCharacterAttributes(indexLeft, indexRight - indexLeft, redColor, false);
-                            break;
-                        }
-                    }
+                    setCharacterAttributes(indexLeftBlue, indexRightBlue - indexLeftBlue, blueColor, false);
                 }
                 else
                 {
-                    setCharacterAttributes(indexLeft, indexRight - indexLeft, blackColor, false);
-                    indexLeft = indexRight;//move to the next word
+                    setCharacterAttributes(indexLeftBlue, indexRightBlue - indexLeftBlue, blackColor, false);  
                 }
-                
+                indexLeftBlue = indexRightBlue;//move to the next word
             }
-            indexRight++;
+            indexRightBlue++;//increase the size of the substring we're checking
+        }
+        //now we check red keywords. We start at the index of the first nonkey character and go to the last nonkey character
+        boolean match;
+        while(indexRightRed <= afterIndexRed)
+        {
+            match = false;
+            //similar to how we checked the first/last nonkey character, we need to find out if there's a match in our substring
+            for(String s : redKeywords)
+            {
+                //if the character we're looking at matches part of a keyword, we have a match and should keep expanding the substring
+                //we must also check if we've reached the end first so we don't get an error
+                if(indexRightRed == afterIndexRed || txt.charAt(indexRightRed) == s.charAt(s.length()-1))
+                {
+                    match = true;
+                }
+            }
+            //if we've reached the end or we didn't get a match, that means we've hit the end of the substring
+            if(indexRightRed == afterIndexRed || !match)
+            {
+                //if the text we're looking at is a keyword, change it's color
+                for (String redKeyword : redKeywords) 
+                {
+                    if (txt.substring(indexLeftRed, indexRightRed).matches("(\\s)*" + redKeyword)) 
+                    {
+                        setCharacterAttributes(indexLeftRed, indexRightRed - indexLeftRed, redColor, false);
+                        break;
+                    }
+                    //because the length of the substring will only be above 1 for substrings that somewhat match the keywords,
+                    //in order to not decolor blue keywords this check must be made
+                    if (txt.substring(beforeIndexRed, indexRightRed).length() > 1)
+                        setCharacterAttributes(indexLeftRed, indexRightRed - indexLeftRed, blackColor, false);
+                }
+                beforeIndexRed = indexRightRed;
+                indexLeftRed = indexRightRed;//move to the next word
+            }
+            //logic for if our first character in the string is not a match
+            if(match && indexRightRed != afterIndexRed)
+            {
+                for(String s : redKeywords)
+                {
+                    //if we find that the character is not a match, inverse the boolean
+                    if(txt.charAt(indexLeftRed) == s.charAt(s.length()-1))
+                    {
+                        match = false;
+                    }
+                }
+                //if the character is not a match, increase our left bound on the substring
+                if(match)
+                    indexLeftRed++;
+            }
+            indexRightRed++;//increase the size of the substring we're checking
         }
     }
     
@@ -107,25 +200,35 @@ public class StyledDocument extends DefaultStyledDocument
         super.remove(offset,length);
         
         String txt = getText(0, getLength());
-        int beforeIndex = lastNonwordChar(txt, offset);
+        //Set up blue indices
+        int beforeIndex = firstNonwordChar(txt, offset);
         if (beforeIndex < 0)
             beforeIndex = 0;
-        int afterIndex = firstNonwordChar(txt, offset);
-        
+        int afterIndex = lastNonwordChar(txt, offset);
+        //Set up red indices
+        int beforeIndexRed = firstNonkeyChar(txt, offset);
+        if(beforeIndexRed < 0)
+            beforeIndexRed = 0;
+        int afterIndexRed = lastNonkeyChar(txt, offset);
+        int i;
+        //check if the word we're looking at is a red keyword or not. if it is, we need to change it later
+        for(i = 0; i < redKeywords.length; i++)
+        {
+            if(txt.substring(beforeIndexRed, afterIndexRed).matches("(\\s*)" + redKeywords[i]))
+                break;
+        }
+        //check to see if it is a blue keyword or not, then change it if it is
         if (txt.substring(beforeIndex, afterIndex).matches("(\\W)*(" + blueKeywords + ")"))
             setCharacterAttributes(beforeIndex, afterIndex - beforeIndex, blueColor, false);
-        else if(!txt.substring(beforeIndex, afterIndex).matches("(\\s)*(\\w)*"))
-                {
-                    for (int x = 0; x < redKeywords.length; x++)
-                    {
-                        if (txt.substring(beforeIndex, afterIndex).matches(redKeywords[x]))
-                        {
-                            setCharacterAttributes(beforeIndex, afterIndex - beforeIndex, redColor, false);
-                            break;
-                        }
-                    }
-                }
         else
             setCharacterAttributes(beforeIndex, afterIndex - beforeIndex, blackColor, false);
+        //check to see if we found a red keyword or not, then change it if we did
+        if(i != redKeywords.length)
+        {
+            //we change the keyword here so that it can be included in the else if statement, avoiding miscolors
+            setCharacterAttributes(beforeIndexRed, afterIndexRed - beforeIndexRed, redColor, false);
+        }
+        else
+            setCharacterAttributes(beforeIndexRed, afterIndexRed - beforeIndexRed, blackColor, false);
     }
 }

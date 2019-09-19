@@ -1,5 +1,4 @@
 import java.awt.BorderLayout;
-import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -15,11 +14,11 @@ import javax.swing.border.TitledBorder;
 public class textEditor 
 {
 	private JPanel textEditor = new JPanel(new BorderLayout()); //create a new JPanel with a border layout
-	private static JTextPane ta = new JTextPane(); //Create a new JTextArea
-	private String text;
+	static JTextPane ta = new JTextPane(); //Create a new JTextArea
+	static String text = "";
+	StyledDocument doc;
 	
-	
-	
+	@SuppressWarnings("static-access")
 	public textEditor(String contentBuilder) {
 		this.text = contentBuilder;
 	}
@@ -48,19 +47,18 @@ public class textEditor
 		{
 			e.printStackTrace();
 		}
-		StyledDocument doc = new StyledDocument(blueKeywords, redKeywords);
+		doc = new StyledDocument(blueKeywords, redKeywords);
 		ta = new JTextPane(doc);
 		textEditor.setBorder ( new TitledBorder ( new EtchedBorder (), "Text Editor" ) ); //create a border around the JPanel with the name "Text Editor"
         JScrollPane scroll = new JScrollPane ( ta ); //Create a new JScrollPane and add the JTextArea
 	    scroll.setVerticalScrollBarPolicy ( ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED ); //Set the scroll bar to only appear when necessary
 	    textEditor.add(scroll, BorderLayout.CENTER);
+            //ta.setText("if(1 == 2 && 1 == 3\n{\nwhile\n}");
 	}
-	
 	protected void displayText(String line)
 	{
 		ta.setText(line);
 	}
-	
 	protected JPanel getTextEditor()
 	{
 		return textEditor;

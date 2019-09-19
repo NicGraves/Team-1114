@@ -1,21 +1,18 @@
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.FileReader;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.awt.event.ActionEvent;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 
 public class openFileL implements ActionListener {
 	private StringBuilder currentFile;
-	static textEditor t = new textEditor();
 	openProjectL op = new openProjectL(null, null);
-	projectProperties p = new projectProperties(null);
+	static textEditor t = new textEditor();
+	projectProperties p = new projectProperties(currentFile);
 	JFrame frame = new JFrame();
 
 	public openFileL(StringBuilder currentFile)
@@ -24,9 +21,7 @@ public class openFileL implements ActionListener {
 	}
 	public void actionPerformed(ActionEvent e)
 	{
-		  //final String codeSave = ta.getText(); //Get the text that is on the TextEditor window
-        BufferedWriter writer = null; //Create a BufferedWriter
-        JFrame fileNameGetter = new JFrame(); //Create a new JFrame
+		  JFrame fileNameGetter = new JFrame(); //Create a new JFrame
 		String fileName = JOptionPane.showInputDialog(fileNameGetter, "Enter file name (.java is not needed):"); //Create a dialogue box asking for a file name
 		if(fileName.length() != 0 && Files.exists(Paths.get(currentFile.toString()+"\\"+fileName+".java")))
 		{
@@ -36,14 +31,15 @@ public class openFileL implements ActionListener {
 		               String line = "";
 		               String l = "";
 		               while ((line = br.readLine()) != null) {
-		            	   l += line + "\n";
-		               }
-		               t.displayText(l);
+		            		l += line + "\n" ;
+                       }
+                       t.displayText(l);
 		               br.close();
 		           } catch (Exception exc) {
 		               exc.printStackTrace();
 		           }
-		    textEditor full = new textEditor(currentFile.toString()+"\\"+fileName+".java");
+				   JOptionPane.showMessageDialog(frame, fileName+".java opened");
+				   textEditor full = new textEditor(currentFile.toString()+"\\"+fileName+".java");
 		}
 		else if(fileName.length() == 0)
 		{
