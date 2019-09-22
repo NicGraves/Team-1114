@@ -5,6 +5,7 @@ import java.awt.event.ActionListener;
 import java.io.FileReader;
 import java.io.IOException;
 
+import javax.swing.BorderFactory;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -21,7 +22,7 @@ public class UIBuilder
 {
 
 	private static String saveDirectory = "Project_Directory"; //Name of the IDE workspace where all projects get saved
-	static StringBuilder currentProject = new StringBuilder(" "); //Saves the path of the current open project
+	static StringBuilder currentProject = new StringBuilder(""); //Saves the path of the current open project
 	JMenuBar menuBar = new JMenuBar(); //Create a JMenuBar
 	static JPanel projectProperties = new JPanel(new BorderLayout());
 	JPanel textEditor = new JPanel(new BorderLayout()); //create a new JPanel with a border layout
@@ -31,6 +32,7 @@ public class UIBuilder
 	private projects p = new projects();
 	private files f = new files();
 	messageDisplay msgD = new messageDisplay();
+	TitledBorder projectTitle = BorderFactory.createTitledBorder( new EtchedBorder (), "Project Properties");
 	
 	public JMenuBar buildMenu()
 	{
@@ -50,6 +52,7 @@ public class UIBuilder
                 try 
                 {
 					p.openProject(saveDirectory, currentProject);
+					resetProjectTitle();
 				} 
                 catch (WorkspaceFolderException e1) 
                 {
@@ -63,7 +66,9 @@ public class UIBuilder
             @Override
             public void actionPerformed(ActionEvent e) 
             {
-                p.closeProject();
+                p.closeProject(currentProject);
+                projectPropertiesClear();
+				resetProjectTitle();
             }
         });
 	    JMenuItem projectCreateNew = new JMenuItem("Create New Project"); //Under the project menu item create another menu item called "Create New Project"
@@ -74,6 +79,7 @@ public class UIBuilder
             	try 
             	{
 					p.createNewProject(saveDirectory, currentProject);
+					resetProjectTitle();
 				} 
             	catch (IOException e1) 
             	{
@@ -213,7 +219,7 @@ public class UIBuilder
 	public JPanel buildProjectProperties()
 	{
 		projectProperties.setPreferredSize(new Dimension(200, 190)); //Set the size of the window
-    	projectProperties.setBorder ( new TitledBorder ( new EtchedBorder (), "Project" ) ); //Add a border around the window
+    	projectProperties.setBorder (projectTitle); //Add a border around the window
     	
     	return projectProperties;
 	}
@@ -336,14 +342,17 @@ public class UIBuilder
 		}
 	}
 	
-	static void setCurrentProject(StringBuilder currentProject)
+	public void resetProjectTitle()
 	{
-		UIBuilder.currentProject = currentProject;
-	}
-	
-	static StringBuilder getCurrentProject()
-	{
-		return currentProject;
+		if(currentProject.length() == 0)
+		{
+			projectTitle.setTitle("Project Properties");
+		}
+		else
+		{
+			projectTitle.setTitle(currentProject.toString().substring(currentProject.toString().lastIndexOf('\\') + 1));
+		}
+		projectProperties.repaint();
 	}
 	
 }

@@ -38,9 +38,9 @@ public class projects
 		}
 	}
 	
-	public void closeProject()
+	public void closeProject(StringBuilder currentProject)
 	{
-		UIBuilder.projectPropertiesClear();
+		currentProject.setLength(0);
 	}
 	
 	public void createNewProject(String saveDirectory, StringBuilder currentProject) throws IOException, NoProjectNameException, WorkspaceFolderException
