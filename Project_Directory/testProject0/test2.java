@@ -1,4 +1,7 @@
-if(1 == 2 && 1 == 3)
+class test2
 {
-	while
+	public void print(String s)
+	{
+		System.out.println(s);
+	}
 }
