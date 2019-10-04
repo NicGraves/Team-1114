@@ -24,8 +24,7 @@ public class Main
         frame.setVisible(true);
 		
 		try {
-		      runProcess("javac Project_Directory\\testProject0\\test.java");
-		      runProcess("javac Project_Directory\\testProject0\\test2.java");
+		      runProcess("javac Project_Directory\\testProject0\\test.java Project_Directory\\testProject0\\test2.java");
 		      runProcess("java -cp Project_Directory\\testProject0 test");
 		    } catch (Exception e) {
 		      e.printStackTrace();
