@@ -447,7 +447,6 @@ public class UIBuilder
 	    while ((line = in.readLine()) != null) 
 	    {
 	    	output += line+"\n";
-	        System.out.println(line);
 	    }
 	    return output;
 	}
