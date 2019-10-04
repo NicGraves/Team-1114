@@ -1,5 +1,8 @@
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -61,7 +64,7 @@ public class projects
 		}
 		else if(Files.exists(path))
 		{
-			throw new WorkspaceFolderException("Cannot select the workspace folder. \nPlease select a project folder");
+			throw new WorkspaceFolderException("A project with that name already exists.");
 		}
 	}
 }

@@ -16,13 +16,18 @@ public class files
 	JFrame frame = new JFrame();
 	String text = "";
 	
-	public String openFile(StringBuilder currentProject) throws IOException, NoFileNameException, ProjectNotOpenException, FileDoesNotExistException
+	public String openFile(StringBuilder currentProject, StringBuilder currentFile) throws IOException, NoFileNameException, ProjectNotOpenException, FileDoesNotExistException
 	{
 		JFrame fileNameGetter = new JFrame(); //Create a new JFrame
-		String fileName = JOptionPane.showInputDialog(fileNameGetter, "Enter file name (.java is not needed):"); //Create a dialogue box asking for a file name
-		if(fileName.length() != 0 && Files.exists(Paths.get(currentProject+"\\"+fileName+".java")) && currentProject.length() != 0)
+		currentFile.setLength(0);
+		String temp = JOptionPane.showInputDialog(fileNameGetter, "Enter file name (.java is not needed):");
+		if(temp != null)
 		{
-		   FileReader reader = new FileReader(currentProject+"\\"+fileName+".java");
+			currentFile.append(temp);
+		}
+		if(currentFile.length() != 0 && Files.exists(Paths.get(currentProject+"\\"+currentFile+".java")) && currentProject.length() != 0)
+		{
+		   FileReader reader = new FileReader(currentProject+"\\"+currentFile+".java");
            BufferedReader br = new BufferedReader(reader);
            String line = "";
            String l = "";
@@ -30,16 +35,16 @@ public class files
         		l += line + "\n" ;
            }
            br.close();
-		   text = currentProject+"\\"+fileName+".java";
+		   text = currentProject+"\\"+currentFile+".java";
 		   return l;
 		}
-		else if(fileName.length() == 0 && currentProject.length() != 0)
+		else if(currentFile.length() == 0 && currentProject.length() != 0)
 		{
 			throw new NoFileNameException("Please enter a file name.");
 		}
-		else if(currentProject == null)
+		else if(currentProject.toString().equals(""))
 		{
-			throw new ProjectNotOpenException("Please open a project to create a new file."); 
+			throw new ProjectNotOpenException("Please open a Project Folder."); 
 		}
 		else 
 		{
@@ -75,22 +80,27 @@ public class files
 		return("");
 	}
 	
-	public void createNewFile(StringBuilder currentProject) throws ProjectNotOpenException, IOException, NoFileNameException, FileExistsException
+	public void createNewFile(StringBuilder currentProject, StringBuilder currentFile) throws ProjectNotOpenException, IOException, NoFileNameException, FileExistsException
 	{
 		JFrame fileNameGetter = new JFrame(); //Create a new JFrame
-		String fileName = JOptionPane.showInputDialog(fileNameGetter, "Enter file name (.java is not needed):"); //Create a dialogue box asking for a file name
-		if(fileName.length() != 0 && !Files.exists(Paths.get(currentProject+"\\"+fileName+".java"))) //If there is a current project open
+		currentFile.setLength(0);
+		String temp = JOptionPane.showInputDialog(fileNameGetter, "Enter file name (.java is not needed):");
+		if(temp != null)
 		{
-			File f = new File(currentProject+"\\"+fileName+".java");
+			currentFile.append(temp);
+		}
+		if(currentFile.length() != 0 && !Files.exists(Paths.get(currentProject+"\\"+currentFile+".java"))) //If there is a current project open
+		{
+			File f = new File(currentProject+"\\"+currentFile+".java");
 			f.getParentFile().mkdirs(); 
 			f.createNewFile();
-			text = currentProject+"\\"+fileName+".java";
+			text = currentProject+"\\"+currentFile+".java";
 		}
-		else if(fileName.length() != 0 && Files.exists(Paths.get(currentProject+"\\"+fileName+".java")))
+		else if(currentFile.length() != 0 && Files.exists(Paths.get(currentProject+"\\"+currentFile+".java")))
 		{
 			throw new FileExistsException("A file with that name already exists in this project.");
 		}
-		else if(fileName.length() == 0)
+		else if(currentFile.length() == 0)
 		{
 			throw new NoFileNameException("Please enter a file name.");
 		}
@@ -100,21 +110,26 @@ public class files
 		}
 	}
 	
-	public String removeFile(StringBuilder currentProject) throws NoFileNameException, ProjectNotOpenException
+	public String removeFile(StringBuilder currentProject, StringBuilder currentFile) throws NoFileNameException, ProjectNotOpenException
 	{
 		JFrame fileNameGetter = new JFrame(); //Create a new JFrame
-		String fileName = JOptionPane.showInputDialog(fileNameGetter, "Enter file name (.java is not needed):"); //Create a dialogue box asking for a file name
-		if(fileName.length() != 0 && Files.exists(Paths.get(currentProject+"\\"+fileName+".java")))
+		currentFile.setLength(0);
+		String temp = JOptionPane.showInputDialog(fileNameGetter, "Enter file name (.java is not needed):");
+		if(temp != null)
 		{
-		   File file = new File(currentProject+"\\"+fileName+".java");
+			currentFile.append(temp);
+		}
+		if(currentFile.length() != 0 && Files.exists(Paths.get(currentProject+"\\"+currentFile+".java")))
+		{
+		   File file = new File(currentProject+"\\"+currentFile+".java");
 		   file.delete();
 		   JOptionPane.showMessageDialog(frame, "File removed");
-		   if(text.equals(currentProject+"\\"+fileName+".java"))
+		   if(text.equals(currentProject+"\\"+currentFile+".java"))
 		   {
 			   return "";
 		   }
 		}
-		else if(fileName.length() == 0)
+		else if(currentFile.length() == 0)
 		{
 			throw new NoFileNameException("Please enter a file name.");
 		}

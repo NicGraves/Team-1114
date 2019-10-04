@@ -2,10 +2,17 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 
 import javax.swing.BorderFactory;
+import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -17,21 +24,32 @@ import javax.swing.JTree;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
+import javax.swing.event.MenuEvent;
+import javax.swing.event.MenuListener;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
 
 public class UIBuilder 
 {
 
 	private static String saveDirectory = "Project_Directory"; //Name of the IDE workspace where all projects get saved
 	static StringBuilder currentProject = new StringBuilder(""); //Saves the path of the current open project
+	static StringBuilder currentFile = new StringBuilder("");
+	String output = "";
+	
+    JTextArea console = new JTextArea(); //Create a new Text Area
 	JMenuBar menuBar = new JMenuBar(); //Create a JMenuBar
-	static JPanel projectProperties = new JPanel(new BorderLayout());
 	JPanel textEditor = new JPanel(new BorderLayout()); //create a new JPanel with a border layout
+	static JPanel projectProperties = new JPanel(new BorderLayout());
 	static JTextPane ta = new JTextPane(); //Create a new JTextArea
 	static JTree tree = new JTree(); //Create a new JTree
 	static JScrollPane spectralFilesScrollPane = new JScrollPane(tree); //Create a new JScrollPlane and add the tree
+	
 	private projects p = new projects();
 	private files f = new files();
+	
 	messageDisplay msgD = new messageDisplay();
+	
 	TitledBorder projectTitle = BorderFactory.createTitledBorder( new EtchedBorder (), "Project Properties");
 	
 	public JMenuBar buildMenu()
@@ -39,10 +57,12 @@ public class UIBuilder
 		JMenu menuItem1 = new JMenu("Project"); //Create a menu item named "Project"
 	    JMenu menuItem2 = new JMenu("File"); //Create a menu item named "File"
 	    JMenu menuItem3 = new JMenu("Help"); //Create a menu item named "Help"
+	    JMenu run = new JMenu("Run");
 	    
 	    menuBar.add(menuItem1); //Add each menu item to the menu bar in order
 	    menuBar.add(menuItem2);
 	    menuBar.add(menuItem3);
+	    menuBar.add(run);
 	    
 	    JMenuItem projectOpen = new JMenuItem("Open Project"); //Under the project menu item create another menu item called "Open Project"
 	    projectOpen.addActionListener(new ActionListener() {
@@ -107,7 +127,7 @@ public class UIBuilder
             {
             	try 
             	{
-					displayText(f.openFile(currentProject));
+					displayText(f.openFile(currentProject, currentFile));
 				} 
             	catch (IOException e1) 
             	{
@@ -119,7 +139,7 @@ public class UIBuilder
             	}
             	catch(ProjectNotOpenException e1)
             	{
-            		msgD.displayMessage("Please open a project to create a new file");
+            		msgD.displayMessage("Please open a Project Folder.");
             	}
             	catch(FileDoesNotExistException e1)
             	{
@@ -165,7 +185,7 @@ public class UIBuilder
             {
                 try 
                 {
-					f.createNewFile(currentProject);
+					f.createNewFile(currentProject, currentFile);
 					projectPropertiesDisplay();
 				} 
                 catch (ProjectNotOpenException e1) 
@@ -193,7 +213,7 @@ public class UIBuilder
             {
             	try 
             	{
-					displayText(f.removeFile(currentProject));
+					displayText(f.removeFile(currentProject, currentFile));
 					projectPropertiesDisplay();
 				} 
             	catch (NoFileNameException e1) 
@@ -212,9 +232,49 @@ public class UIBuilder
 	    menuItem2.add(fileClose);
 	    menuItem2.add(fileCreateNew);
 	    menuItem2.add(fileRemove);
+
+	    run.addMouseListener(new MouseListener() 
+	    {
+	    	@Override
+	        public void mouseReleased(MouseEvent e) {}
+
+	        @Override
+	        public void mousePressed(MouseEvent e) 
+	        {
+	            try
+	    		{
+		    		compileExecute(currentProject, currentFile);
+	    		}
+	    		catch(IOException|InterruptedException e1)
+	    		{
+	    			msgD.displayMessage("Error.");
+	    		}
+	    		catch(ProjectNotOpenException e1)
+	    		{
+	    			msgD.displayMessage("Please open a Project Folder to run.");
+	    		}
+	    		catch(NoFileOpen e1)
+	    		{
+	    			msgD.displayMessage("Please open a File to run.");
+	    		}
+
+	        }
+
+	        @Override
+	        public void mouseExited(MouseEvent e) {}
+
+	        @Override
+	        public void mouseEntered(MouseEvent e) {}
+
+	        @Override
+	        public void mouseClicked(MouseEvent e) {}
+	    });
+	    
+	    menuBar.add(run);
 	   
 	    return menuBar;
 	}
+	
 	
 	public JPanel buildProjectProperties()
 	{
@@ -267,8 +327,7 @@ public class UIBuilder
 		JPanel output = new JPanel(new BorderLayout());
 		String hold = "";
 		
-        output.setBorder ( new TitledBorder ( new EtchedBorder (), "Console" ) ); //Create the border
-        JTextArea console = new JTextArea(); //Create a new Text Area
+        output.setBorder (new TitledBorder(new EtchedBorder(),"Console")); //Create the border
         output.setPreferredSize(new Dimension(50,150)); //Set the size of the JPanel
         console.insert(hold,0);
         console.setLineWrap(true);
@@ -280,6 +339,7 @@ public class UIBuilder
         
 		return output;
 	}
+	
 
 	public static void projectPropertiesDisplay()
 	{
@@ -308,7 +368,7 @@ public class UIBuilder
 //                        while ((line = br.readLine()) != null) {
 //                        	l += line + "\n" ;
 //                        }
-//                        t.displayText(l);
+//                        displayText(l);
 //                        br.close();
 //                    } catch (Exception exc) {
 //                        exc.printStackTrace();
@@ -342,6 +402,11 @@ public class UIBuilder
 		}
 	}
 	
+	public void cosoleText(String line)
+	{
+		console.setText(line);
+	}
+	
 	public void resetProjectTitle()
 	{
 		if(currentProject.length() == 0)
@@ -353,6 +418,70 @@ public class UIBuilder
 			projectTitle.setTitle(currentProject.toString().substring(currentProject.toString().lastIndexOf('\\') + 1));
 		}
 		projectProperties.repaint();
+	}
+	
+	public void compileExecute(StringBuilder currentProject, StringBuilder currentFile) throws IOException, InterruptedException, ProjectNotOpenException, NoFileOpen
+	{
+		if(currentProject.length() != 0 && currentFile.length() != 0)
+		{
+	    	runProcess("javac -d Class "+getFiles(currentProject));
+	    	if(output.equals(""))
+	    	{
+				runProcess("java -cp Class "+currentFile.toString());
+	    	}
+		}
+		else if(currentProject.length() == 0)
+		{
+			throw new ProjectNotOpenException("Please open a Project Folder to run.");
+		}
+		else if(currentFile.toString().equals(""))
+		{
+			throw new NoFileOpen("Please open a File to run.");
+		}
+	}
+	
+	private String printLines(InputStream ins) throws IOException
+	{
+		String line = null;
+	    BufferedReader in = new BufferedReader(new InputStreamReader(ins));
+	    while ((line = in.readLine()) != null) 
+	    {
+	    	output += line+"\n";
+	        System.out.println(line);
+	    }
+	    return output;
+	}
+
+	private void runProcess(String command) throws IOException, InterruptedException
+	{
+		Process pro = Runtime.getRuntime().exec(command);
+		output = "";
+		String err = printLines(pro.getErrorStream());
+		if(err.equals(""))
+		{
+			cosoleText(printLines(pro.getInputStream()));
+		}
+		else
+		{
+			cosoleText(err);
+		}
+//		cosoleText(printLines(pro.getInputStream()));
+//		cosoleText(printLines(pro.getErrorStream()));
+		pro.waitFor();
+	}
+	
+	private String getFiles(StringBuilder currentProject)
+	{
+		File folder = new File(currentProject.toString());
+		String[] files = folder.list();
+		String fileNames = "";
+		
+		for(String file : files)
+		{
+			fileNames += currentProject.toString()+"\\"+file+" ";
+		}
+		
+		return fileNames;
 	}
 	
 }

@@ -35,6 +35,15 @@ class NoFileToSaveException extends Exception
 }
 
 @SuppressWarnings("serial")
+class NoFileOpen extends Exception 
+{
+	public NoFileOpen(String errorMessage) 
+	{
+        super(errorMessage);
+    }
+}
+
+@SuppressWarnings("serial")
 class ProjectNotOpenException extends Exception 
 {
 	public ProjectNotOpenException(String errorMessage) 
