@@ -52,18 +52,19 @@ public class UIBuilder
 	messageDisplay msgD = new messageDisplay();
 	
 	TitledBorder projectTitle = BorderFactory.createTitledBorder( new EtchedBorder (), "Project Properties");
+	TitledBorder fileTitle = BorderFactory.createTitledBorder( new EtchedBorder (), "Editor");
 	
 	public JMenuBar buildMenu()
 	{
 		JMenu menuItem1 = new JMenu("Project"); //Create a menu item named "Project"
 	    JMenu menuItem2 = new JMenu("File"); //Create a menu item named "File"
 	    JMenu menuItem3 = new JMenu("Help"); //Create a menu item named "Help"
-	    JMenu run = new JMenu("Run");
+	    JMenu menuItem4 = new JMenu("Execute");
 	    
 	    menuBar.add(menuItem1); //Add each menu item to the menu bar in order
 	    menuBar.add(menuItem2);
 	    menuBar.add(menuItem3);
-	    menuBar.add(run);
+	    menuBar.add(menuItem4);
 	    
 	    JMenuItem projectOpen = new JMenuItem("Open Project"); //Under the project menu item create another menu item called "Open Project"
 	    projectOpen.addActionListener(new ActionListener() {
@@ -129,6 +130,7 @@ public class UIBuilder
             	try 
             	{
 					displayText(f.openFile(currentProject, currentFile));
+					resetFileTitle();
 				} 
             	catch (IOException e1) 
             	{
@@ -176,7 +178,9 @@ public class UIBuilder
             @Override
             public void actionPerformed(ActionEvent e) 
             {
+        		currentFile.setLength(0);
             	displayText(f.closeFile());
+            	resetFileTitle();
             }
         });
 	    JMenuItem fileCreateNew = new JMenuItem("Create New"); 
@@ -188,6 +192,7 @@ public class UIBuilder
                 {
 					f.createNewFile(currentProject, currentFile);
 					projectPropertiesDisplay();
+					resetFileTitle();
 				} 
                 catch (ProjectNotOpenException e1) 
                 {
@@ -214,8 +219,10 @@ public class UIBuilder
             {
             	try 
             	{
+            		currentFile.setLength(0);
 					displayText(f.removeFile(currentProject, currentFile));
 					projectPropertiesDisplay();
+					resetFileTitle();
 				} 
             	catch (NoFileNameException e1) 
             	{
@@ -234,7 +241,7 @@ public class UIBuilder
 	    menuItem2.add(fileCreateNew);
 	    menuItem2.add(fileRemove);
 
-	    run.addMouseListener(new MouseListener() 
+	    menuItem4.addMouseListener(new MouseListener() 
 	    {
 	    	@Override
 	        public void mouseReleased(MouseEvent e) {}
@@ -275,8 +282,6 @@ public class UIBuilder
 	        @Override
 	        public void mouseClicked(MouseEvent e) {}
 	    });
-	    
-	    menuBar.add(run);
 	   
 	    return menuBar;
 	}
@@ -318,7 +323,7 @@ public class UIBuilder
 		doc = new StyledDocument(blueKeywords, redKeywords);
 		ta = new JTextPane(doc);
 		
-		textEditor.setBorder ( new TitledBorder ( new EtchedBorder (), "Text Editor" ) ); //create a border around the JPanel with the name "Text Editor"
+		textEditor.setBorder (fileTitle); //create a border around the JPanel with the name "Text Editor"
 		
         JScrollPane scroll = new JScrollPane ( ta ); //Create a new JScrollPane and add the JTextArea
 	    scroll.setVerticalScrollBarPolicy ( ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED ); //Set the scroll bar to only appear when necessary
@@ -425,6 +430,19 @@ public class UIBuilder
 			projectTitle.setTitle(currentProject.toString().substring(currentProject.toString().lastIndexOf('\\') + 1));
 		}
 		projectProperties.repaint();
+	}
+	
+	public void resetFileTitle()
+	{
+		if(currentFile.length() == 0)
+		{
+			fileTitle.setTitle("Editor");
+		}
+		else
+		{
+			fileTitle.setTitle(currentFile.toString());
+		}
+		textEditor.repaint();
 	}
 	
 	public void compileExecute(StringBuilder currentProject, StringBuilder currentFile) throws IOException, InterruptedException, ProjectNotOpenException, NoFileOpen
