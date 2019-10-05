@@ -1,5 +1,6 @@
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -243,6 +244,7 @@ public class UIBuilder
 	        {
 	            try
 	    		{
+	            	f.saveFile(ta, currentProject);
 		    		compileExecute(currentProject, currentFile);
 	    		}
 	    		catch(IOException|InterruptedException e1)
@@ -257,6 +259,10 @@ public class UIBuilder
 	    		{
 	    			msgD.displayMessage("Please open a File to run.");
 	    		}
+            	catch (NoFileToSaveException e1) 
+            	{
+            		msgD.displayMessage("No file to save.");
+				} 
 
 	        }
 
@@ -318,6 +324,7 @@ public class UIBuilder
 	    scroll.setVerticalScrollBarPolicy ( ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED ); //Set the scroll bar to only appear when necessary
 	    
 	    textEditor.add(scroll, BorderLayout.CENTER);
+
 	    
 		return textEditor;
 	}
