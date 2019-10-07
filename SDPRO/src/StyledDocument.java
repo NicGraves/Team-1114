@@ -5,6 +5,7 @@
  */
 
 import java.awt.Color;
+import javax.swing.JTextArea;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultStyledDocument;
@@ -17,6 +18,7 @@ import javax.swing.text.StyleContext;
  */
 public class StyledDocument extends DefaultStyledDocument 
 {
+    private JTextArea display;
     private int numBlueKeywords;
     private int numRedKeywords;
     private final StyleContext style = StyleContext.getDefaultStyleContext();
@@ -25,8 +27,9 @@ public class StyledDocument extends DefaultStyledDocument
     private final AttributeSet blackColor = style.addAttribute(style.getEmptySet(), StyleConstants.Foreground, Color.BLACK);
     private final String blueKeywords;
     private final String[] redKeywords;
-    public StyledDocument(String blue, String red)
+    public StyledDocument(String blue, String red, JTextArea dis)
     {
+        display = dis;
         numBlueKeywords = 0;
         numRedKeywords = 0;
         blueKeywords = blue;
@@ -212,6 +215,9 @@ public class StyledDocument extends DefaultStyledDocument
             }
             indexRightRed++;//increase the size of the substring we're checking
         }
+        
+        //Display the number of blue and red keywords
+        display.setText("Blue Keywords: " + numBlueKeywords + "     Red Keywords: " + numRedKeywords);
     }
     
     @Override
@@ -289,6 +295,9 @@ public class StyledDocument extends DefaultStyledDocument
             }
             setCharacterAttributes(beforeIndexRed, afterIndexRed - beforeIndexRed, blackColor, false);
         }
+        
+        //Display the number of blue and red keywords
+        display.setText("Blue Keywords: " + numBlueKeywords + "     Red Keywords: " + numRedKeywords);
     }
     
     public int getNumRedKeywords(){return numRedKeywords;}
