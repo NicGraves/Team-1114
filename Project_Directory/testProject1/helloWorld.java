@@ -1,4 +1,4 @@
-public class test 
+public class helloWorld 
 {
 	public static void main(String[] args)
 	{
@@ -6,4 +6,5 @@ public class test
 //		t.print("GOT IT");
 		System.out.println("Hello World");
 	}
+	
 }

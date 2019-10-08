@@ -48,6 +48,7 @@ public class UIBuilder
 	
 	private projects p = new projects();
 	private files f = new files();
+	private executeCompile ec = new executeCompile();
 	
 	messageDisplay msgD = new messageDisplay();
 	
@@ -157,7 +158,7 @@ public class UIBuilder
             {
             	try 
             	{
-					f.saveFile(ta, currentProject);
+					f.saveFile(ta, currentProject, currentFile);
 				} 
             	catch (IOException e1) 
             	{
@@ -251,8 +252,8 @@ public class UIBuilder
 	        {
 	            try
 	    		{
-	            	f.saveFile(ta, currentProject);
-		    		compileExecute(currentProject, currentFile);
+	            	f.saveFile(ta, currentProject, currentFile);
+	            	cosoleText(ec.compileExecute(currentProject, currentFile));
 	    		}
 	    		catch(IOException|InterruptedException e1)
 	    		{
@@ -353,7 +354,7 @@ public class UIBuilder
 	}
 	
 
-	public static void projectPropertiesDisplay()
+	public void projectPropertiesDisplay()
 	{
 		projectPropertiesClear();
 		FileTree model = new FileTree(currentProject.toString()); //Create a new FileTree using the Selected File
@@ -374,6 +375,9 @@ public class UIBuilder
 //                status.setText(selectedNode.getAbsolutePath());
 //                if (selectedNode.isFile()) {
 //                    try {
+//                    	currentFile.setLength(0);
+//                    	currentFile.append(selectedNode);
+//                    	resetFileTitle();
 //                        BufferedReader br = new BufferedReader(new FileReader(selectedNode.getAbsolutePath()));
 //                        String line = "";
 //                        String l = "";
@@ -444,68 +448,4 @@ public class UIBuilder
 		}
 		textEditor.repaint();
 	}
-	
-	public void compileExecute(StringBuilder currentProject, StringBuilder currentFile) throws IOException, InterruptedException, ProjectNotOpenException, NoFileOpen
-	{
-		if(currentProject.length() != 0 && currentFile.length() != 0)
-		{
-	    	runProcess("javac -d Class "+getFiles(currentProject));
-	    	if(output.equals(""))
-	    	{
-				runProcess("java -cp Class "+currentFile.toString());
-	    	}
-		}
-		else if(currentProject.length() == 0)
-		{
-			throw new ProjectNotOpenException("Please open a Project Folder to run.");
-		}
-		else if(currentFile.toString().equals(""))
-		{
-			throw new NoFileOpen("Please open a File to run.");
-		}
-	}
-	
-	private String printLines(InputStream ins) throws IOException
-	{
-		String line = null;
-	    BufferedReader in = new BufferedReader(new InputStreamReader(ins));
-	    while ((line = in.readLine()) != null) 
-	    {
-	    	output += line+"\n";
-	    }
-	    return output;
-	}
-
-	private void runProcess(String command) throws IOException, InterruptedException
-	{
-		Process pro = Runtime.getRuntime().exec(command);
-		output = "";
-		String err = printLines(pro.getErrorStream());
-		if(err.equals(""))
-		{
-			cosoleText(printLines(pro.getInputStream()));
-		}
-		else
-		{
-			cosoleText(err);
-		}
-//		cosoleText(printLines(pro.getInputStream()));
-//		cosoleText(printLines(pro.getErrorStream()));
-		pro.waitFor();
-	}
-	
-	private String getFiles(StringBuilder currentProject)
-	{
-		File folder = new File(currentProject.toString());
-		String[] files = folder.list();
-		String fileNames = "";
-		
-		for(String file : files)
-		{
-			fileNames += currentProject.toString()+"\\"+file+" ";
-		}
-		
-		return fileNames;
-	}
-	
 }
