@@ -345,7 +345,7 @@ public class UIBuilder
         console.insert(hold,0);
         console.setLineWrap(true);
         console.setWrapStyleWord(true);
-        console.setEditable(false); //Does not allow the user to edit the output
+        console.setEditable(true); //Does not allow the user to edit the output
         JScrollPane Cscroll = new JScrollPane (console); //Create a JScrollPane object
         Cscroll.setVerticalScrollBarPolicy ( ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED ); //Set the scroll bars to appear when necessary
         output.add(Cscroll); //Add the scroll to the JPanel
