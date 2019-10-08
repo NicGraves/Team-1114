@@ -5,7 +5,6 @@
  */
 
 import java.awt.Color;
-import javax.swing.JTextArea;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultStyledDocument;
@@ -18,20 +17,14 @@ import javax.swing.text.StyleContext;
  */
 public class StyledDocument extends DefaultStyledDocument 
 {
-    private JTextArea display;
-    private int numBlueKeywords;
-    private int numRedKeywords;
     private final StyleContext style = StyleContext.getDefaultStyleContext();
     private final AttributeSet redColor = style.addAttribute(style.getEmptySet(), StyleConstants.Foreground, Color.RED);
     private final AttributeSet blueColor = style.addAttribute(style.getEmptySet(), StyleConstants.Foreground, Color.BLUE);
     private final AttributeSet blackColor = style.addAttribute(style.getEmptySet(), StyleConstants.Foreground, Color.BLACK);
     private final String blueKeywords;
     private final String[] redKeywords;
-    public StyledDocument(String blue, String red, JTextArea dis)
+    public StyledDocument(String blue, String red)
     {
-        display = dis;
-        numBlueKeywords = 0;
-        numRedKeywords = 0;
         blueKeywords = blue;
         redKeywords = red.split("\\w"); //splits up the text file red keywords on word characters [a-zA-z0-9_]
     }
@@ -114,7 +107,7 @@ public class StyledDocument extends DefaultStyledDocument
         super.insertString(offset, str, a);
         
         String txt = getText(0, getLength()); //get all text in the box
-
+        
         //Set up indices to find blue keywords
         int beforeIndexBlue = firstNonwordChar(txt, offset);
         if(beforeIndexBlue < 0) beforeIndexBlue = 0;
@@ -129,9 +122,6 @@ public class StyledDocument extends DefaultStyledDocument
         int indexLeftRed = beforeIndexRed;
         int indexRightRed = beforeIndexRed;
         
-        String word = txt.substring(beforeIndexBlue, offset) + txt.substring(offset + 1, afterIndexBlue);
-        String key = txt.substring(beforeIndexRed, offset) + txt.substring(offset + 1, afterIndexRed);
-        
         //start at the index of the first nonword character and go to the last nonword character to check for blue keywords
         while(indexRightBlue <= afterIndexBlue)
         {
@@ -141,22 +131,16 @@ public class StyledDocument extends DefaultStyledDocument
                 //if the text we're looking at is a keyword, change it's color
                 if (txt.substring(indexLeftBlue, indexRightBlue).matches("(\\s)*(\\W)*(" + blueKeywords + ")"))
                 {
-                    numBlueKeywords++;
                     setCharacterAttributes(indexLeftBlue, indexRightBlue - indexLeftBlue, blueColor, false);
                 }
                 else
                 {
-                    if(word.matches("(\\s)*(\\W)*(" + blueKeywords + ")"))
-                    {
-                        numBlueKeywords--;
-                    }
                     setCharacterAttributes(indexLeftBlue, indexRightBlue - indexLeftBlue, blackColor, false);  
                 }
                 indexLeftBlue = indexRightBlue;//move to the next word
             }
             indexRightBlue++;//increase the size of the substring we're checking
         }
-        
         //now we check red keywords. We start at the index of the first nonkey character and go to the last nonkey character
         boolean match;
         while(indexRightRed <= afterIndexRed)
@@ -178,22 +162,15 @@ public class StyledDocument extends DefaultStyledDocument
                 //if the text we're looking at is a keyword, change it's color
                 for (String redKeyword : redKeywords) 
                 {
-                    if(key.matches("(\\s)*" + redKeyword) && !str.equals(" "))
-                            numRedKeywords--;
                     if (txt.substring(indexLeftRed, indexRightRed).matches("(\\s)*" + redKeyword)) 
                     {
-                        if(str.equals(" "))
-                            numRedKeywords--;
-                        numRedKeywords++;
                         setCharacterAttributes(indexLeftRed, indexRightRed - indexLeftRed, redColor, false);
                         break;
                     }
                     //because the length of the substring will only be above 1 for substrings that somewhat match the keywords,
                     //in order to not decolor blue keywords this check must be made
                     if (txt.substring(beforeIndexRed, indexRightRed).length() > 1)
-                    {
                         setCharacterAttributes(indexLeftRed, indexRightRed - indexLeftRed, blackColor, false);
-                    }        
                 }
                 beforeIndexRed = indexRightRed;
                 indexLeftRed = indexRightRed;//move to the next word
@@ -215,21 +192,14 @@ public class StyledDocument extends DefaultStyledDocument
             }
             indexRightRed++;//increase the size of the substring we're checking
         }
-        
-        //Display the number of blue and red keywords
-        display.setText("Blue Keywords: " + numBlueKeywords + "     Red Keywords: " + numRedKeywords);
     }
     
     @Override
     public void remove(int offset, int length) throws BadLocationException
     {
-        String txt = getText(0, getLength());
-        String wordPrevious = txt.substring(firstNonwordChar(txt,offset), lastNonwordChar(txt,offset));
-        String keyPrevious = txt.substring(firstNonkeyChar(txt, offset), lastNonkeyChar(txt, offset));
-        
         super.remove(offset,length);
         
-        txt = getText(0, getLength());
+        String txt = getText(0, getLength());
         //Set up blue indices
         int beforeIndex = firstNonwordChar(txt, offset);
         if (beforeIndex < 0)
@@ -241,65 +211,24 @@ public class StyledDocument extends DefaultStyledDocument
             beforeIndexRed = 0;
         int afterIndexRed = lastNonkeyChar(txt, offset);
         int i;
-        
-        String leftHalf = txt.substring(beforeIndex, offset);
-        String rightHalf = txt.substring(offset, afterIndex);
-        
-        System.out.println(leftHalf + rightHalf);
-        
         //check if the word we're looking at is a red keyword or not. if it is, we need to change it later
         for(i = 0; i < redKeywords.length; i++)
         {
             if(txt.substring(beforeIndexRed, afterIndexRed).matches("(\\s*)" + redKeywords[i]))
                 break;
         }
-
         //check to see if it is a blue keyword or not, then change it if it is
         if (txt.substring(beforeIndex, afterIndex).matches("(\\W)*(" + blueKeywords + ")"))
-        {
-            numBlueKeywords++;
             setCharacterAttributes(beforeIndex, afterIndex - beforeIndex, blueColor, false);
-        }   
         else
-        {
-            if(wordPrevious.matches("(\\W)*(" + blueKeywords + ")"))
-            {
-                numBlueKeywords--;
-            }
             setCharacterAttributes(beforeIndex, afterIndex - beforeIndex, blackColor, false);
-        }  
         //check to see if we found a red keyword or not, then change it if we did
         if(i != redKeywords.length)
         {
-            for(i = 0; i < redKeywords.length; i++)
-            {
-                if(keyPrevious.matches("(\\s*)" + redKeywords[i]))
-                {
-                    numRedKeywords--;
-                    break;
-                }   
-            }
             //we change the keyword here so that it can be included in the else if statement, avoiding miscolors
-            numRedKeywords++;
             setCharacterAttributes(beforeIndexRed, afterIndexRed - beforeIndexRed, redColor, false);
         }
         else
-        {
-            for(i = 0; i < redKeywords.length; i++)
-            {
-                if(keyPrevious.matches("(\\s*)" + redKeywords[i]))
-                {
-                    numRedKeywords--;
-                    break;
-                }   
-            }
             setCharacterAttributes(beforeIndexRed, afterIndexRed - beforeIndexRed, blackColor, false);
-        }
-        
-        //Display the number of blue and red keywords
-        display.setText("Blue Keywords: " + numBlueKeywords + "     Red Keywords: " + numRedKeywords);
     }
-    
-    public int getNumRedKeywords(){return numRedKeywords;}
-    public int getNumBlueKeywords(){return numBlueKeywords;}
 }

@@ -63,12 +63,6 @@ public class files
 			}
 			String[] lines = ta.getText().split("\\n");
 			BufferedWriter writer = new BufferedWriter(new FileWriter(currentProject+"\\"+currentFile));
-	public void saveFile(JTextPane ta, StringBuilder currentProject) throws IOException, NoFileToSaveException, ProjectNotOpenException 
-	{
-		if(currentProject.length() != 0 && text.length() != 0)
-		{
-			String[] lines = ta.getText().split("\\n");
-			BufferedWriter writer = new BufferedWriter(new FileWriter(text));
 			for(int i = 0 ; i< lines.length; i++)
 			{
 				writer.write(lines[i] + "\n");
@@ -76,7 +70,7 @@ public class files
 		    writer.close();
 		    JOptionPane.showMessageDialog(frame, "File saved");
 		}
-		else if(currentProject.length() != 0 && text.length() == 0)
+		else if(currentProject.length() != 0 && currentFile.length() == 0)
 		{
 			throw new NoFileToSaveException("No file to save.");
 		}
