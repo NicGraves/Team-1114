@@ -32,8 +32,7 @@ import javax.swing.event.TreeSelectionListener;
 
 public class UIBuilder 
 {
-        private static StyledDocument doc;
-        
+
 	private static String saveDirectory = "Project_Directory"; //Name of the IDE workspace where all projects get saved
 	static StringBuilder currentProject = new StringBuilder(""); //Saves the path of the current open project
 	static StringBuilder currentFile = new StringBuilder("");
@@ -44,7 +43,6 @@ public class UIBuilder
 	JPanel textEditor = new JPanel(new BorderLayout()); //create a new JPanel with a border layout
 	static JPanel projectProperties = new JPanel(new BorderLayout());
 	static JTextPane ta = new JTextPane(); //Create a new JTextArea
-        static JTextArea keywords = new JTextArea(); //Create a panel for displaying the number of keywords
 	static JTree tree = new JTree(); //Create a new JTree
 	static JScrollPane spectralFilesScrollPane = new JScrollPane(tree); //Create a new JScrollPlane and add the tree
 	
@@ -307,8 +305,6 @@ public class UIBuilder
 		
 		try
 		{
-                        //Leave this in for Jared :) 
-                        //in = new FileReader("Keywords.txt");
 			in = new FileReader("SDPRO\\src\\Keywords.txt");
 	      	int character;
 	      	while ((character = in.read()) != 10 && character != -1)
@@ -325,20 +321,17 @@ public class UIBuilder
 		{
 			e.printStackTrace();
 		}
-		doc = new StyledDocument(blueKeywords, redKeywords, keywords);
+		doc = new StyledDocument(blueKeywords, redKeywords);
 		ta = new JTextPane(doc);
-                //Set settings for the Keywords panel
-                keywords.setPreferredSize(new Dimension(200, 25));
-                keywords.setBorder(new EtchedBorder());
-                keywords.setEditable(false);
-                
+		
 		textEditor.setBorder (fileTitle); //create a border around the JPanel with the name "Text Editor"
 		
         JScrollPane scroll = new JScrollPane ( ta ); //Create a new JScrollPane and add the JTextArea
 	    scroll.setVerticalScrollBarPolicy ( ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED ); //Set the scroll bar to only appear when necessary
 	    
 	    textEditor.add(scroll, BorderLayout.CENTER);
-	    textEditor.add(keywords, BorderLayout.PAGE_END);
+
+	    
 		return textEditor;
 	}
 	
@@ -352,7 +345,7 @@ public class UIBuilder
         console.insert(hold,0);
         console.setLineWrap(true);
         console.setWrapStyleWord(true);
-        console.setEditable(false); //Does not allow the user to edit the output
+        console.setEditable(true); //Does not allow the user to edit the output
         JScrollPane Cscroll = new JScrollPane (console); //Create a JScrollPane object
         Cscroll.setVerticalScrollBarPolicy ( ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED ); //Set the scroll bars to appear when necessary
         output.add(Cscroll); //Add the scroll to the JPanel
@@ -361,14 +354,14 @@ public class UIBuilder
 	}
 	
 
-	public static void projectPropertiesDisplay()
+	public void projectPropertiesDisplay()
 	{
 		projectPropertiesClear();
 		FileTree model = new FileTree(currentProject.toString()); //Create a new FileTree using the Selected File
         tree.setModel(model); //Set the model as the FileTree class model
         /***************************************************************************************
         *    Title: FileSelectorModel  
-        *    Author:  Sï¿½bastien Le Callonnec
+        *    Author:  Sébastien Le Callonnec
         *    Date: September 18, 2019
         *    Code version: version 1.0
         *    Availability: https://www.weblogism.com/item/300/use-jtree-to-display-files-in-filesystem-ii
@@ -382,6 +375,9 @@ public class UIBuilder
 //                status.setText(selectedNode.getAbsolutePath());
 //                if (selectedNode.isFile()) {
 //                    try {
+//                    	currentFile.setLength(0);
+//                    	currentFile.append(selectedNode);
+//                    	resetFileTitle();
 //                        BufferedReader br = new BufferedReader(new FileReader(selectedNode.getAbsolutePath()));
 //                        String line = "";
 //                        String l = "";
@@ -452,68 +448,4 @@ public class UIBuilder
 		}
 		textEditor.repaint();
 	}
-	
-	public void compileExecute(StringBuilder currentProject, StringBuilder currentFile) throws IOException, InterruptedException, ProjectNotOpenException, NoFileOpen
-	{
-		if(currentProject.length() != 0 && currentFile.length() != 0)
-		{
-	    	runProcess("javac -d Class "+getFiles(currentProject));
-	    	if(output.equals(""))
-	    	{
-				runProcess("java -cp Class "+currentFile.toString());
-	    	}
-		}
-		else if(currentProject.length() == 0)
-		{
-			throw new ProjectNotOpenException("Please open a Project Folder to run.");
-		}
-		else if(currentFile.toString().equals(""))
-		{
-			throw new NoFileOpen("Please open a File to run.");
-		}
-	}
-	
-	private String printLines(InputStream ins) throws IOException
-	{
-		String line = null;
-	    BufferedReader in = new BufferedReader(new InputStreamReader(ins));
-	    while ((line = in.readLine()) != null) 
-	    {
-	    	output += line+"\n";
-	    }
-	    return output;
-	}
-
-	private void runProcess(String command) throws IOException, InterruptedException
-	{
-		Process pro = Runtime.getRuntime().exec(command);
-		output = "";
-		String err = printLines(pro.getErrorStream());
-		if(err.equals(""))
-		{
-			cosoleText(printLines(pro.getInputStream()));
-		}
-		else
-		{
-			cosoleText(err);
-		}
-//		cosoleText(printLines(pro.getInputStream()));
-//		cosoleText(printLines(pro.getErrorStream()));
-		pro.waitFor();
-	}
-	
-	private String getFiles(StringBuilder currentProject)
-	{
-		File folder = new File(currentProject.toString());
-		String[] files = folder.list();
-		String fileNames = "";
-		
-		for(String file : files)
-		{
-			fileNames += currentProject.toString()+"\\"+file+" ";
-		}
-		
-		return fileNames;
-	}
-	
 }
