@@ -1,30 +1,27 @@
 import java.awt.BorderLayout;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+
 import javax.swing.*;
 
 public class Main 
 {
-	protected static String saveDirectory = "Project_Directory"; //Name of the IDE workspace where all projects get saved
-	protected static StringBuilder currentProject; //Saves the path of the current open project
 	
 	public static void main(String[] args) 
 	{
+		UIBuilder u = new UIBuilder();
 		JFrame frame = new JFrame("IDE");
-		menu m = new menu();
-		projectProperties p = new projectProperties(currentProject);
-		textEditor t = new textEditor();
-		console c = new console();
-		//Creating the Frame
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(1000, 500);
-        m.buildMenu(saveDirectory);
-        p.buildProjectProperties();
-        t.buildTextEditor();
-        c.buildConsole();
-	    frame.getContentPane().add(BorderLayout.PAGE_START, m.getJMenuBar());
-    	frame.getContentPane().add(BorderLayout.LINE_START, p.getProjectProperties()); //Add the JPanel to the frame
-        frame.getContentPane().add(BorderLayout.CENTER, t.getTextEditor());
-        frame.getContentPane().add(BorderLayout.PAGE_END, c.getConsole()); //Add the JPanel to the JFrame
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setSize(1000, 500);
+		frame.getContentPane().add(BorderLayout.PAGE_START, u.buildMenu());
+    	frame.getContentPane().add(BorderLayout.LINE_START, u.buildProjectProperties()); //Add the JPanel to the frame
+        frame.getContentPane().add(BorderLayout.CENTER, u.buildTextEditor());
+        frame.getContentPane().add(BorderLayout.PAGE_END, u.buildConsole()); //Add the JPanel to the JFrame
         frame.setLocationRelativeTo ( null );
         frame.setVisible(true);
 	}
 }
+
