@@ -52,12 +52,17 @@ public class files
 		}
 	}
 	
-	public void saveFile(JTextPane ta, StringBuilder currentProject) throws IOException, NoFileToSaveException, ProjectNotOpenException 
+	public void saveFile(JTextPane ta, StringBuilder currentProject, StringBuilder currentFile) throws IOException, NoFileToSaveException, ProjectNotOpenException 
 	{
-		if(currentProject.length() != 0 && text.length() != 0)
+		if(currentProject.length() != 0 && currentFile.length() != 0)
 		{
+			//text = currentProject+"\\"+currentFile+".java";
+			if(!currentFile.toString().endsWith(".java"))
+			{
+				currentFile.append(".java");
+			}
 			String[] lines = ta.getText().split("\\n");
-			BufferedWriter writer = new BufferedWriter(new FileWriter(text));
+			BufferedWriter writer = new BufferedWriter(new FileWriter(currentProject+"\\"+currentFile));
 			for(int i = 0 ; i< lines.length; i++)
 			{
 				writer.write(lines[i] + "\n");
@@ -65,7 +70,7 @@ public class files
 		    writer.close();
 		    JOptionPane.showMessageDialog(frame, "File saved");
 		}
-		else if(currentProject.length() != 0 && text.length() == 0)
+		else if(currentProject.length() != 0 && currentFile.length() == 0)
 		{
 			throw new NoFileToSaveException("No file to save.");
 		}
