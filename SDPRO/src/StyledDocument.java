@@ -178,11 +178,12 @@ public class StyledDocument extends DefaultStyledDocument
                 //if the text we're looking at is a keyword, change it's color
                 for (String redKeyword : redKeywords) 
                 {
-                    if(key.matches("(\\s)*" + redKeyword) && !str.equals(" "))
+                    System.out.println(key);
+                    if(key.matches("(\\s)*" + redKeyword) && !str.equals(" ") && !str.matches("\\w"))
                             numRedKeywords--;
                     if (txt.substring(indexLeftRed, indexRightRed).matches("(\\s)*" + redKeyword)) 
                     {
-                        if(str.equals(" "))
+                        if(str.equals(" ") || str.matches("\\w"))
                             numRedKeywords--;
                         numRedKeywords++;
                         setCharacterAttributes(indexLeftRed, indexRightRed - indexLeftRed, redColor, false);
