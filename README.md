@@ -32,4 +32,10 @@ Remove file:
 File -> Remove -> Type in file name
 Deletes current file from system.
 
+Compile & Run:
+With Project and File open, press the execute button along the task bar.
+Compiles and executes the currently open file, saving it in the process.
+
+Note: keyword counter is along the bottom of the text editor.
+
 
