@@ -178,11 +178,12 @@ public class StyledDocument extends DefaultStyledDocument
                 //if the text we're looking at is a keyword, change it's color
                 for (String redKeyword : redKeywords) 
                 {
-                    if(key.matches("(\\s)*" + redKeyword) && !str.equals(" "))
+                    System.out.println(key);
+                    if(key.matches("(\\s)*" + redKeyword) && !str.equals(" ") && !str.matches("\\w"))
                             numRedKeywords--;
                     if (txt.substring(indexLeftRed, indexRightRed).matches("(\\s)*" + redKeyword)) 
                     {
-                        if(str.equals(" "))
+                        if(str.equals(" ") || str.matches("\\w"))
                             numRedKeywords--;
                         numRedKeywords++;
                         setCharacterAttributes(indexLeftRed, indexRightRed - indexLeftRed, redColor, false);
@@ -231,6 +232,8 @@ public class StyledDocument extends DefaultStyledDocument
             numRedKeywords = 0;
             numBlueKeywords = 0;
             super.remove(offset, length);
+            display.setText("Blue Keywords: " + numBlueKeywords + "     Red Keywords: " + numRedKeywords);
+
             return;
         }
         if(start < 0)start = 0;
@@ -238,7 +241,6 @@ public class StyledDocument extends DefaultStyledDocument
         
         String wordPrevious = txt.substring(start, lastNonwordChar(txt,offset));
         String keyPrevious = txt.substring(startRed, lastNonkeyChar(txt, offset));
-        System.out.println("wordPrevious: " + wordPrevious + " |keyPrevious: " + keyPrevious);
         super.remove(offset,length);
         
         txt = getText(0, getLength());
@@ -269,6 +271,10 @@ public class StyledDocument extends DefaultStyledDocument
         {
             numBlueKeywords++;
             setCharacterAttributes(beforeIndex, afterIndex - beforeIndex, blueColor, false);
+            if(wordPrevious.matches("(\\W)*(" + blueKeywords + ")"))
+            {
+                numBlueKeywords--;
+            }
         }   
         else
         {
