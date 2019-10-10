@@ -224,9 +224,21 @@ public class StyledDocument extends DefaultStyledDocument
     public void remove(int offset, int length) throws BadLocationException
     {
         String txt = getText(0, getLength());
-        String wordPrevious = txt.substring(firstNonwordChar(txt,offset), lastNonwordChar(txt,offset));
-        String keyPrevious = txt.substring(firstNonkeyChar(txt, offset), lastNonkeyChar(txt, offset));
+        int start = firstNonwordChar(txt, offset);
+        int startRed = firstNonkeyChar(txt, offset);
+        if(start < 0 && startRed < 0 && offset == 0)
+        {
+            numRedKeywords = 0;
+            numBlueKeywords = 0;
+            super.remove(offset, length);
+            return;
+        }
+        if(start < 0)start = 0;
+        if(startRed < 0)startRed = 0;
         
+        String wordPrevious = txt.substring(start, lastNonwordChar(txt,offset));
+        String keyPrevious = txt.substring(startRed, lastNonkeyChar(txt, offset));
+        System.out.println("wordPrevious: " + wordPrevious + " |keyPrevious: " + keyPrevious);
         super.remove(offset,length);
         
         txt = getText(0, getLength());
@@ -244,8 +256,6 @@ public class StyledDocument extends DefaultStyledDocument
         
         String leftHalf = txt.substring(beforeIndex, offset);
         String rightHalf = txt.substring(offset, afterIndex);
-        
-        System.out.println(leftHalf + rightHalf);
         
         //check if the word we're looking at is a red keyword or not. if it is, we need to change it later
         for(i = 0; i < redKeywords.length; i++)
