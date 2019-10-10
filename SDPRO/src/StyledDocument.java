@@ -231,6 +231,8 @@ public class StyledDocument extends DefaultStyledDocument
             numRedKeywords = 0;
             numBlueKeywords = 0;
             super.remove(offset, length);
+            display.setText("Blue Keywords: " + numBlueKeywords + "     Red Keywords: " + numRedKeywords);
+
             return;
         }
         if(start < 0)start = 0;
@@ -238,7 +240,6 @@ public class StyledDocument extends DefaultStyledDocument
         
         String wordPrevious = txt.substring(start, lastNonwordChar(txt,offset));
         String keyPrevious = txt.substring(startRed, lastNonkeyChar(txt, offset));
-        System.out.println("wordPrevious: " + wordPrevious + " |keyPrevious: " + keyPrevious);
         super.remove(offset,length);
         
         txt = getText(0, getLength());
@@ -269,6 +270,10 @@ public class StyledDocument extends DefaultStyledDocument
         {
             numBlueKeywords++;
             setCharacterAttributes(beforeIndex, afterIndex - beforeIndex, blueColor, false);
+            if(wordPrevious.matches("(\\W)*(" + blueKeywords + ")"))
+            {
+                numBlueKeywords--;
+            }
         }   
         else
         {
