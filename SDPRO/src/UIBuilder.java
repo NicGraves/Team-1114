@@ -32,8 +32,7 @@ import javax.swing.event.TreeSelectionListener;
 
 public class UIBuilder 
 {
-        private static StyledDocument doc;
-        
+    private static StyledDocument doc;
 	private static String saveDirectory = "Project_Directory"; //Name of the IDE workspace where all projects get saved
 	static StringBuilder currentProject = new StringBuilder(""); //Saves the path of the current open project
 	static StringBuilder currentFile = new StringBuilder("");
@@ -44,13 +43,13 @@ public class UIBuilder
 	JPanel textEditor = new JPanel(new BorderLayout()); //create a new JPanel with a border layout
 	static JPanel projectProperties = new JPanel(new BorderLayout());
 	static JTextPane ta = new JTextPane(); //Create a new JTextArea
-        static JTextArea keywords = new JTextArea(); //Create a panel for displaying the number of keywords
+    static JTextArea keywords = new JTextArea(); //Create a panel for displaying the number of keywords
 	static JTree tree = new JTree(); //Create a new JTree
 	static JScrollPane spectralFilesScrollPane = new JScrollPane(tree); //Create a new JScrollPlane and add the tree
 	
 	private projects p = new projects();
 	private files f = new files();
-	
+	private executeCompile ec = new executeCompile();
 	messageDisplay msgD = new messageDisplay();
 	
 	TitledBorder projectTitle = BorderFactory.createTitledBorder( new EtchedBorder (), "Project Properties");
@@ -159,7 +158,7 @@ public class UIBuilder
             {
             	try 
             	{
-					f.saveFile(ta, currentProject);
+					f.saveFile(ta, currentProject, currentFile);
 				} 
             	catch (IOException e1) 
             	{
@@ -253,8 +252,8 @@ public class UIBuilder
 	        {
 	            try
 	    		{
-	            	f.saveFile(ta, currentProject);
-		    		compileExecute(currentProject, currentFile);
+	            	f.saveFile(ta, currentProject, currentFile);
+	            	cosoleText(ec.compileExecute(currentProject, currentFile));
 	    		}
 	    		catch(IOException|InterruptedException e1)
 	    		{
@@ -293,12 +292,13 @@ public class UIBuilder
 	{
 		projectProperties.setPreferredSize(new Dimension(200, 190)); //Set the size of the window
     	projectProperties.setBorder (projectTitle); //Add a border around the window
+    	
     	return projectProperties;
 	}
 	
 	public JPanel buildTextEditor()
 	{
-		
+		StyledDocument doc;
 		String redKeywords = "";
 		String blueKeywords = "";
 		FileReader in;
@@ -350,7 +350,7 @@ public class UIBuilder
         console.insert(hold,0);
         console.setLineWrap(true);
         console.setWrapStyleWord(true);
-        console.setEditable(false); //Does not allow the user to edit the output
+        console.setEditable(true); //Does not allow the user to edit the output
         JScrollPane Cscroll = new JScrollPane (console); //Create a JScrollPane object
         Cscroll.setVerticalScrollBarPolicy ( ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED ); //Set the scroll bars to appear when necessary
         output.add(Cscroll); //Add the scroll to the JPanel
@@ -380,6 +380,9 @@ public class UIBuilder
 //                status.setText(selectedNode.getAbsolutePath());
 //                if (selectedNode.isFile()) {
 //                    try {
+//                    	currentFile.setLength(0);
+//                    	currentFile.append(selectedNode);
+//                    	resetFileTitle();
 //                        BufferedReader br = new BufferedReader(new FileReader(selectedNode.getAbsolutePath()));
 //                        String line = "";
 //                        String l = "";
