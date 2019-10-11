@@ -16,41 +16,41 @@ public class files
 	JFrame frame = new JFrame();
 	String text = "";
 	
-	public String openFile(StringBuilder currentProject, StringBuilder currentFile) throws IOException, NoFileNameException, ProjectNotOpenException, FileDoesNotExistException
-	{
-		JFrame fileNameGetter = new JFrame(); //Create a new JFrame
-		currentFile.setLength(0);
-		String temp = JOptionPane.showInputDialog(fileNameGetter, "Enter file name (.java is not needed):");
-		if(temp != null)
-		{
-			currentFile.append(temp);
-		}
-		if(currentFile.length() != 0 && Files.exists(Paths.get(currentProject+"\\"+currentFile+".java")) && currentProject.length() != 0)
-		{
-		   FileReader reader = new FileReader(currentProject+"\\"+currentFile+".java");
-           BufferedReader br = new BufferedReader(reader);
-           String line = "";
-           String l = "";
-           while ((line = br.readLine()) != null) {
-        		l += line + "\n" ;
-           }
-           br.close();
-		   text = currentProject+"\\"+currentFile+".java";
-		   return l;
-		}
-		else if(currentFile.length() == 0 && currentProject.length() != 0)
-		{
-			throw new NoFileNameException("Please enter a file name.");
-		}
-		else if(currentProject.toString().equals(""))
-		{
-			throw new ProjectNotOpenException("Please open a Project Folder."); 
-		}
-		else 
-		{
-			throw new FileDoesNotExistException("A file with that name does not exist in this project.");
-		}
-	}
+//	public String openFile(StringBuilder currentProject, StringBuilder currentFile) throws IOException, NoFileNameException, ProjectNotOpenException, FileDoesNotExistException
+//	{
+//		JFrame fileNameGetter = new JFrame(); //Create a new JFrame
+//		currentFile.setLength(0);
+//		String temp = JOptionPane.showInputDialog(fileNameGetter, "Enter file name (.java is not needed):");
+//		if(temp != null)
+//		{
+//			currentFile.append(temp);
+//		}
+//		if(currentFile.length() != 0 && Files.exists(Paths.get(currentProject+"\\"+currentFile+".java")) && currentProject.length() != 0)
+//		{
+//		   FileReader reader = new FileReader(currentProject+"\\"+currentFile+".java");
+//           BufferedReader br = new BufferedReader(reader);
+//           String line = "";
+//           String l = "";
+//           while ((line = br.readLine()) != null) {
+//        		l += line + "\n" ;
+//           }
+//           br.close();
+//		   text = currentProject+"\\"+currentFile+".java";
+//		   return l;
+//		}
+//		else if(currentFile.length() == 0 && currentProject.length() != 0)
+//		{
+//			throw new NoFileNameException("Please enter a file name.");
+//		}
+//		else if(currentProject.toString().equals(""))
+//		{
+//			throw new ProjectNotOpenException("Please open a Project Folder."); 
+//		}
+//		else 
+//		{
+//			throw new FileDoesNotExistException("A file with that name does not exist in this project.");
+//		}
+//	}
 	
 	public void saveFile(JTextPane ta, StringBuilder currentProject, StringBuilder currentFile) throws IOException, NoFileToSaveException, ProjectNotOpenException 
 	{

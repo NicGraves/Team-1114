@@ -1,69 +1,83 @@
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public class executeCompile 
-{
-	
-	String output = "";
-	
-	public String compileExecute(StringBuilder currentProject, StringBuilder currentFile) throws IOException, InterruptedException, ProjectNotOpenException, NoFileOpen
-	{
-		if(currentProject.length() != 0 && currentFile.length() != 0)
-		{
-	    	runProcess("javac -d Class "+getFiles(currentProject));
-	    	if(output.equals(""))
-	    	{
-	    		String runFile = currentFile.toString().substring(0, currentFile.toString().indexOf("."));
-				runProcess("java -cp Class "+runFile);
-	    	}
-		}
-		else if(currentProject.length() == 0)
-		{
-			throw new ProjectNotOpenException("Please open a Project Folder to run.");
-		}
-		else if(currentFile.toString().equals(""))
-		{
-			throw new NoFileOpen("Please open a File to run.");
-		}
-		
-		return output;
-	}
-	
-	private void printLines(InputStream ins) throws IOException
-	{
-		String line = null;
-	    BufferedReader in = new BufferedReader(new InputStreamReader(ins));
-	    while ((line = in.readLine()) != null) 
-	    {
-	    	output += line+"\n";
-	    }
-	}
-
-	private void runProcess(String command) throws IOException, InterruptedException
-	{
-		Process pro = Runtime.getRuntime().exec(command);
-		output = "";
-		printLines(pro.getErrorStream());
-		if(output.equals(""))
-		{
-			printLines(pro.getInputStream());
-		}
-		pro.waitFor();
-	}
-	
-	private String getFiles(StringBuilder currentProject)
+{	
+	/*
+	 * Function that gets all the files from the project folder and stores them in an array list for compiling 
+	 */
+	private ArrayList<String> javacCommandBuilder(StringBuilder currentProject, StringBuilder currentFile)
 	{
 		File folder = new File(currentProject.toString());
 		String[] files = folder.list();
-		String fileNames = "";
+		ArrayList<String> command = new ArrayList<String>(Arrays.asList("javac","-d","Class"));
 		
 		for(String file : files)
 		{
-			fileNames += currentProject.toString()+"\\"+file+" ";
+			command.add(currentProject.toString()+"\\"+file);
 		}
-		return fileNames;
+		return command;
+	}
+	
+	/*
+	 * Function that gets the current open file and runs the file
+	 */
+	private ArrayList<String> javaCommadBuilder(StringBuilder currentFile)
+	{
+		ArrayList<String> command = new ArrayList<String>(Arrays.asList("java","-cp","Class"));
+		command.add(currentFile.toString().substring(0, currentFile.toString().indexOf(".")));
+		return command;
+	}
+	
+	/*
+	 * Function that compiles and runs the project
+	 */
+	public String execute(StringBuilder currentProject, StringBuilder currentFile) throws IOException
+	{
+		ProcessBuilder processBuilder = new ProcessBuilder(javacCommandBuilder(currentProject, currentFile));
+		Process process = processBuilder.start();
+		
+		if( process.getErrorStream().read() != -1 )
+		{
+			return(print("Compilation Errors",process.getErrorStream()));
+		}
+		if( process.exitValue() == 0 )
+		{
+			process = new ProcessBuilder(javaCommadBuilder(currentFile)).start();
+			if( process.getErrorStream().read() != -1 )
+			{
+				return(print("Errors ",process.getErrorStream()));
+			}
+			else
+			{
+				return(print("Output ",process.getInputStream()));
+			}
+		}
+		return "";
+	}
+	
+	/*
+	 * Function that prints the necessary error or output statements
+	 */
+	private static String print(String status, InputStream input) throws IOException
+	{
+		BufferedReader in = new BufferedReader(new InputStreamReader(input));
+		String text = "";
+		String line = null;
+		while((line = in.readLine()) != null )
+		{
+			text += line + "\n";
+		}
+		in.close();
+		return text;
 	}
 }

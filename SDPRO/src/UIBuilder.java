@@ -1,16 +1,12 @@
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
@@ -25,8 +21,6 @@ import javax.swing.JTree;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
-import javax.swing.event.MenuEvent;
-import javax.swing.event.MenuListener;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 
@@ -35,56 +29,66 @@ public class UIBuilder
 
 	private static String saveDirectory = "Project_Directory"; //Name of the IDE workspace where all projects get saved
 	static StringBuilder currentProject = new StringBuilder(""); //Saves the path of the current open project
-	static StringBuilder currentFile = new StringBuilder("");
-	String output = "";
+	static StringBuilder currentFile = new StringBuilder(""); //Saves the name of the current open file
 	
-    JTextArea console = new JTextArea(); //Create a new Text Area
-	JMenuBar menuBar = new JMenuBar(); //Create a JMenuBar
-	JPanel textEditor = new JPanel(new BorderLayout()); //create a new JPanel with a border layout
+	//Instantiates all the necessary windows on the text editor
+    JTextArea console = new JTextArea();
+	JMenuBar menuBar = new JMenuBar(); 
+	JPanel textEditor = new JPanel(new BorderLayout());
 	static JPanel projectProperties = new JPanel(new BorderLayout());
-	static JTextPane ta = new JTextPane(); //Create a new JTextArea
-	static JTree tree = new JTree(); //Create a new JTree
-	static JScrollPane spectralFilesScrollPane = new JScrollPane(tree); //Create a new JScrollPlane and add the tree
+	static JTextPane ta = new JTextPane();
+	static JTree tree = new JTree();
 	
+	//Instantiates all the necessary objects
 	private projects p = new projects();
 	private files f = new files();
 	private executeCompile ec = new executeCompile();
+	//private messageDisplay msgD = new messageDisplay();
 	
-	messageDisplay msgD = new messageDisplay();
-	
+	//Instantiates the border titles of the project properties window and the text editor window to their default titles
 	TitledBorder projectTitle = BorderFactory.createTitledBorder( new EtchedBorder (), "Project Properties");
 	TitledBorder fileTitle = BorderFactory.createTitledBorder( new EtchedBorder (), "Editor");
 	
+	/*
+	 * This function creates the JMenu bar that can be found along the top of the text editor.
+	 * It creates each JMenu and populates them with the necessary JMenuItems which each have a 
+	 * action listener to call the correct function once they are pressed.
+	 */
 	public JMenuBar buildMenu()
 	{
-		JMenu menuItem1 = new JMenu("Project"); //Create a menu item named "Project"
-	    JMenu menuItem2 = new JMenu("File"); //Create a menu item named "File"
-	    JMenu menuItem3 = new JMenu("Help"); //Create a menu item named "Help"
-	    JMenu menuItem4 = new JMenu("Execute");
+		JMenu menuItem1 = new JMenu("Project"); //Create a menu named "Project"
+	    JMenu menuItem2 = new JMenu("File"); //Create a menu named "File"
+	    JMenu menuItem3 = new JMenu("Help"); //Create a menu named "Help"
+	    JMenu menuItem4 = new JMenu("Execute"); //Create a menu named "Execute"
 	    
-	    menuBar.add(menuItem1); //Add each menu item to the menu bar in order
+	    //Add each menu to the menu bar
+	    menuBar.add(menuItem1); 
 	    menuBar.add(menuItem2);
 	    menuBar.add(menuItem3);
 	    menuBar.add(menuItem4);
 	    
-	    JMenuItem projectOpen = new JMenuItem("Open Project"); //Under the project menu item create another menu item called "Open Project"
+	    //Create a new menu item called "Open Project"
+	    JMenuItem projectOpen = new JMenuItem("Open Project"); 
+	    //Create an action listener for that menu item
 	    projectOpen.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) 
             {
                 try 
                 {
-					p.openProject(saveDirectory, currentProject);
-					resetProjectTitle();
+					p.openProject(saveDirectory, currentProject); //Calls the openProject function
+					resetProjectTitle(); //Reset the projectPoperties title to the name of the open project
 				} 
                 catch (WorkspaceFolderException e1) 
                 {
-                	msgD.displayMessage("Cannot select the workspace folder. \nPlease select a project folder.");
 				}
-                projectPropertiesDisplay();
+                projectPropertiesDisplay(); //Reset the project properties window to display the open projects files
             }
         });
-	    JMenuItem projectClose = new JMenuItem("Close Project"); //Under the project menu item create another menu item called "Close Project"
+	    
+	    //Create a new menu item called "Close Project"
+	    JMenuItem projectClose = new JMenuItem("Close Project");
+	    //Create an action listener for that menu item
 	    projectClose.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) 
@@ -94,154 +98,118 @@ public class UIBuilder
 				resetProjectTitle();
             }
         });
-	    JMenuItem projectCreateNew = new JMenuItem("Create New Project"); //Under the project menu item create another menu item called "Create New Project"
+	    
+	    //Create a new menu item called "Create New Project"
+	    JMenuItem projectCreateNew = new JMenuItem("Create New Project"); 
+	    //Create an action listener for that menu item
 	    projectCreateNew.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) 
             {
             	try 
             	{
-					p.createNewProject(saveDirectory, currentProject);
-					resetProjectTitle();
+					p.createNewProject(saveDirectory, currentProject); //Call the create new project function 
+					resetProjectTitle(); //Reset the project properties title to the newly created project name
 				} 
             	catch (IOException e1) 
-            	{
-            		msgD.displayMessage("Error.");
-				} 
+            	{} 
             	catch (NoProjectNameException e1) 
-            	{
-            		msgD.displayMessage("Please enter a project name.");
-				} 
+            	{} 
             	catch (WorkspaceFolderException e1) 
-            	{
-            		msgD.displayMessage("Cannot select the workspace folder. \nPlease select a project folder.");
-				}
+            	{}
             }
         });
 	    
+	    //Add the project menu items
 	    menuItem1.add(projectOpen); //Add the new menu items to the "Project" menu item
 	    menuItem1.add(projectClose);
 	    menuItem1.add(projectCreateNew);
 	    
-	    JMenuItem fileOpen = new JMenuItem("Open"); //Under the file menu item create another menu item called "Open"
-	    fileOpen.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-            	try 
-            	{
-					displayText(f.openFile(currentProject, currentFile));
-					resetFileTitle();
-				} 
-            	catch (IOException e1) 
-            	{
-            		msgD.displayMessage("Error");
-				}
-            	catch(NoFileNameException e1)
-            	{
-            		msgD.displayMessage("Please enter file name.");
-            	}
-            	catch(ProjectNotOpenException e1)
-            	{
-            		msgD.displayMessage("Please open a Project Folder.");
-            	}
-            	catch(FileDoesNotExistException e1)
-            	{
-            		msgD.displayMessage("A file with that name does not exist in this project.");
-            	}
-            }
-        });
+	    //Create a new menu item called "Save"
 	    JMenuItem fileSave = new JMenuItem("Save");
+	    //Create an action listener for that menu item
 	    fileSave.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) 
             {
             	try 
             	{
-					f.saveFile(ta, currentProject, currentFile);
+					f.saveFile(ta, currentProject, currentFile); //Call the saveFile function
 				} 
             	catch (IOException e1) 
-            	{
-            		msgD.displayMessage("Error.");
-				} 
+            	{} 
             	catch (NoFileToSaveException e1) 
-            	{
-            		msgD.displayMessage("No file to save.");
-				} 
+            	{} 
             	catch (ProjectNotOpenException e1) 
-            	{
-            		msgD.displayMessage("Open a project to save the file to.");
-				}
+            	{}
             }
         });
+
+	    //Create a new menu item called "Close"
 	    JMenuItem fileClose = new JMenuItem("Close");
+	    //Create an action listener for that menu item
 	    fileClose.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) 
             {
-        		currentFile.setLength(0);
-            	displayText(f.closeFile());
-            	resetFileTitle();
+        		currentFile.setLength(0); //Clear the current open file name
+            	displayText(f.closeFile()); //Clear the text that is currently displayed on the text editor window
+            	resetFileTitle(); //Reset the text editor window title to the default 
             }
         });
+	    
+	    //Create a new menu item called "Create New"
 	    JMenuItem fileCreateNew = new JMenuItem("Create New"); 
+	    //Create an action listener for that menu item
 	    fileCreateNew.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) 
             {
                 try 
                 {
-					f.createNewFile(currentProject, currentFile);
-					projectPropertiesDisplay();
-					resetFileTitle();
+					f.createNewFile(currentProject, currentFile); //Call the create a new file function
+					projectPropertiesDisplay(); //Reset the project properties display
+					resetFileTitle(); //Reset the text editor window title to the newly created file
 				} 
                 catch (ProjectNotOpenException e1) 
-                {
-                	msgD.displayMessage("Please open a project to create a new file.");
-				} 
+                {} 
                 catch (IOException e1) 
-                {
-                	msgD.displayMessage("Error.");
-				} 
+                {} 
                 catch (NoFileNameException e1) 
-                {
-                	msgD.displayMessage("Please enter a file name.");
-				} 
+                {} 
                 catch (FileExistsException e1) 
-                {
-                	msgD.displayMessage("A file with that name already exists in this project.");
-				}
+                {}
             }
         });
+	    
+	    //Create a new menu item called "Remove"
 	    JMenuItem fileRemove = new JMenuItem("Remove");
+	    //Create an action listener for that menu item
 	    fileRemove.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) 
             {
             	try 
             	{
-            		currentFile.setLength(0);
-					displayText(f.removeFile(currentProject, currentFile));
-					projectPropertiesDisplay();
-					resetFileTitle();
+            		currentFile.setLength(0); //Clear the name of the currently opened project
+					displayText(f.removeFile(currentProject, currentFile)); //Clear the text on the text editor window
+					projectPropertiesDisplay(); //Reset the project properties display window
+					resetFileTitle(); //Reset the text editor window title
 				} 
             	catch (NoFileNameException e1) 
-            	{
-            		msgD.displayMessage("Please enter a file name.");
-				} 
+            	{} 
             	catch (ProjectNotOpenException e1) 
-            	{
-            		msgD.displayMessage("Please open a project to delete a file.");
-				}
+            	{}
             }
         });
 	    
-	    menuItem2.add(fileOpen); //Add the new menu items to the "File" menu item
+	    //Add the File menu items
 	    menuItem2.add(fileSave);
 	    menuItem2.add(fileClose);
 	    menuItem2.add(fileCreateNew);
 	    menuItem2.add(fileRemove);
-
+	    
+	    //This is the action listener for the "Execute" menu button
 	    menuItem4.addMouseListener(new MouseListener() 
 	    {
 	    	@Override
@@ -252,34 +220,20 @@ public class UIBuilder
 	        {
 	            try
 	    		{
-	            	f.saveFile(ta, currentProject, currentFile);
-	            	cosoleText(ec.compileExecute(currentProject, currentFile));
-	    		}
-	    		catch(IOException|InterruptedException e1)
-	    		{
-	    			msgD.displayMessage("Error.");
+	            	f.saveFile(ta, currentProject, currentFile); //Save the current open file
+	            	cosoleText(ec.execute(currentProject, currentFile)); //Execute the current open file
 	    		}
 	    		catch(ProjectNotOpenException e1)
-	    		{
-	    			msgD.displayMessage("Please open a Project Folder to run.");
-	    		}
-	    		catch(NoFileOpen e1)
-	    		{
-	    			msgD.displayMessage("Please open a File to run.");
-	    		}
+	    		{}
             	catch (NoFileToSaveException e1) 
-            	{
-            		msgD.displayMessage("No file to save.");
-				} 
-
+            	{} 
+	            catch (IOException e1) 
+	            {} 
 	        }
-
 	        @Override
 	        public void mouseExited(MouseEvent e) {}
-
 	        @Override
 	        public void mouseEntered(MouseEvent e) {}
-
 	        @Override
 	        public void mouseClicked(MouseEvent e) {}
 	    });
@@ -287,7 +241,9 @@ public class UIBuilder
 	    return menuBar;
 	}
 	
-	
+	/*
+	 * This function creates the project properties window
+	*/
 	public JPanel buildProjectProperties()
 	{
 		projectProperties.setPreferredSize(new Dimension(200, 190)); //Set the size of the window
@@ -296,13 +252,18 @@ public class UIBuilder
     	return projectProperties;
 	}
 	
+	/*
+	 * This function builds the Text Editor window. It also reads what the user is typing or what is being read from a save file
+	 * in real time to highlight any necessary keywords.
+	 */
 	public JPanel buildTextEditor()
 	{
-		StyledDocument doc;
-		String redKeywords = "";
-		String blueKeywords = "";
-		FileReader in;
+		StyledDocument doc; //Instantiate a Styled Document
+		String redKeywords = ""; //Variable that will store all the keywords that need to be highlighted in red
+		String blueKeywords = ""; //Variable that will store all the keywords that need to be highlighted in blue
+		FileReader in; //Instantiate a file reader
 		
+		//Get all the necessary keywords from the Keywords document
 		try
 		{
 			in = new FileReader("SDPRO\\src\\Keywords.txt");
@@ -321,20 +282,23 @@ public class UIBuilder
 		{
 			e.printStackTrace();
 		}
-		doc = new StyledDocument(blueKeywords, redKeywords);
-		ta = new JTextPane(doc);
+		doc = new StyledDocument(blueKeywords, redKeywords); //Pass the necessary keywords to the Style Document
+		ta = new JTextPane(doc); //Style the TextPane with the style document
 		
-		textEditor.setBorder (fileTitle); //create a border around the JPanel with the name "Text Editor"
+		textEditor.setBorder(fileTitle);
 		
         JScrollPane scroll = new JScrollPane ( ta ); //Create a new JScrollPane and add the JTextArea
 	    scroll.setVerticalScrollBarPolicy ( ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED ); //Set the scroll bar to only appear when necessary
 	    
-	    textEditor.add(scroll, BorderLayout.CENTER);
+	    textEditor.add(scroll, BorderLayout.CENTER); 
 
 	    
 		return textEditor;
 	}
 	
+	/*
+	 * This function builds the console for the output
+	 */
 	public JPanel buildConsole()
 	{
 		JPanel output = new JPanel(new BorderLayout());
@@ -345,7 +309,7 @@ public class UIBuilder
         console.insert(hold,0);
         console.setLineWrap(true);
         console.setWrapStyleWord(true);
-        console.setEditable(true); //Does not allow the user to edit the output
+        console.setEditable(false); //Does not allow the user to edit the output
         JScrollPane Cscroll = new JScrollPane (console); //Create a JScrollPane object
         Cscroll.setVerticalScrollBarPolicy ( ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED ); //Set the scroll bars to appear when necessary
         output.add(Cscroll); //Add the scroll to the JPanel
@@ -353,9 +317,13 @@ public class UIBuilder
 		return output;
 	}
 	
-
+	/*
+	 * This function builds the project properties display.
+	 * Also allows users to double click on a file to open the file in the text editor
+	 */
 	public void projectPropertiesDisplay()
 	{
+		JScrollPane spectralFilesScrollPane = new JScrollPane(tree);
 		projectPropertiesClear();
 		FileTree model = new FileTree(currentProject.toString()); //Create a new FileTree using the Selected File
         tree.setModel(model); //Set the model as the FileTree class model
@@ -368,48 +336,57 @@ public class UIBuilder
         *    Modified slightly by the team to work with our project
         *
         ***************************************************************************************/
-//        JLabel status = new JLabel(currentProject.toString());
-//        tree.addTreeSelectionListener(new TreeSelectionListener() {
-//            public void valueChanged(TreeSelectionEvent e) {
-//                folderNameGetter selectedNode = (folderNameGetter) tree.getLastSelectedPathComponent();
-//                status.setText(selectedNode.getAbsolutePath());
-//                if (selectedNode.isFile()) {
-//                    try {
-//                    	currentFile.setLength(0);
-//                    	currentFile.append(selectedNode);
-//                    	resetFileTitle();
-//                        BufferedReader br = new BufferedReader(new FileReader(selectedNode.getAbsolutePath()));
-//                        String line = "";
-//                        String l = "";
-//                        while ((line = br.readLine()) != null) {
-//                        	l += line + "\n" ;
-//                        }
-//                        displayText(l);
-//                        br.close();
-//                    } catch (Exception exc) {
-//                        exc.printStackTrace();
-//                    }
-//                }
-//            }
-//        });
+        JLabel status = new JLabel(currentProject.toString());
+        tree.addTreeSelectionListener(new TreeSelectionListener() {
+            public void valueChanged(TreeSelectionEvent e) {
+                folderNameGetter selectedNode = (folderNameGetter) tree.getLastSelectedPathComponent();
+                status.setText(selectedNode.getAbsolutePath());
+                if (selectedNode.isFile()) {
+                    try {
+                    	currentFile.setLength(0);
+                    	currentFile.append(selectedNode);
+                    	resetFileTitle();
+                        BufferedReader br = new BufferedReader(new FileReader(selectedNode.getAbsolutePath()));
+                        String line = "";
+                        String l = "";
+                        while ((line = br.readLine()) != null) {
+                        	l += line + "\n" ;
+                        }
+                        displayText(l);
+                        br.close();
+                    } catch (Exception exc) {
+                        exc.printStackTrace();
+                    }
+                }
+            }
+        });
 //*********************************************************************************************************************************************************************************************************************************
         spectralFilesScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS); //Show scroll bars when necessary
         projectProperties.add(spectralFilesScrollPane); //Add to projectProperties JPanel
         redoProjectProperties();
 	}
 
+	/*
+	 * This function clears the project properties window when a project is closed
+	 */
 	public static void projectPropertiesClear()
 	{
 		tree.setModel(null);
 		redoProjectProperties();
 	}
 	
+	/*
+	 * This function refreshes the project properties window when... A new project is opened or a new file is created or removed
+	 */
 	public static void redoProjectProperties()
 	{
 		projectProperties.revalidate();
         projectProperties.repaint();
 	}
 	
+	/*
+	 * Displayed the open file on the text editor
+	 */
 	public static void displayText(String line)
 	{
 		if(line != null)
@@ -418,11 +395,17 @@ public class UIBuilder
 		}
 	}
 	
+	/*
+	 * Display the output on the console
+	 */
 	public void cosoleText(String line)
 	{
 		console.setText(line);
 	}
 	
+	/*
+	 * Reset the title of the project properties window when a new project 
+	 */
 	public void resetProjectTitle()
 	{
 		if(currentProject.length() == 0)
@@ -436,6 +419,9 @@ public class UIBuilder
 		projectProperties.repaint();
 	}
 	
+	/*
+	 * Reset the title of the project properties window when a new project 
+	 */
 	public void resetFileTitle()
 	{
 		if(currentFile.length() == 0)
