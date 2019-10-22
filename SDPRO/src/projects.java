@@ -65,7 +65,6 @@ public class projects
 			currentProject.setLength(0);
 			currentProject.append(temp);
 			Files.createDirectory(path);
-			UIBuilder.projectPropertiesDisplay();
 		}
 		else if(temp.length() == 0)
 		{

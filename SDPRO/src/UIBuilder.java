@@ -35,6 +35,7 @@ public class UIBuilder
     JTextArea console = new JTextArea();
 	JMenuBar menuBar = new JMenuBar(); 
 	JPanel textEditor = new JPanel(new BorderLayout());
+	JTextArea keywords = new JTextArea();
 	static JPanel projectProperties = new JPanel(new BorderLayout());
 	static JTextPane ta = new JTextPane();
 	static JTree tree = new JTree();
@@ -258,7 +259,6 @@ public class UIBuilder
 	 */
 	public JPanel buildTextEditor()
 	{
-		StyledDocument doc; //Instantiate a Styled Document
 		String redKeywords = ""; //Variable that will store all the keywords that need to be highlighted in red
 		String blueKeywords = ""; //Variable that will store all the keywords that need to be highlighted in blue
 		FileReader in; //Instantiate a file reader
@@ -439,68 +439,4 @@ public class UIBuilder
 		}
 		textEditor.repaint();
 	}
-	
-	public void compileExecute(StringBuilder currentProject, StringBuilder currentFile) throws IOException, InterruptedException, ProjectNotOpenException, NoFileOpen
-	{
-		if(currentProject.length() != 0 && currentFile.length() != 0)
-		{
-	    	runProcess("javac -d Class "+getFiles(currentProject));
-	    	if(output.equals(""))
-	    	{
-				runProcess("java -cp Class "+currentFile.toString());
-	    	}
-		}
-		else if(currentProject.length() == 0)
-		{
-			throw new ProjectNotOpenException("Please open a Project Folder to run.");
-		}
-		else if(currentFile.toString().equals(""))
-		{
-			throw new NoFileOpen("Please open a File to run.");
-		}
-	}
-	
-	private String printLines(InputStream ins) throws IOException
-	{
-		String line = null;
-	    BufferedReader in = new BufferedReader(new InputStreamReader(ins));
-	    while ((line = in.readLine()) != null) 
-	    {
-	    	output += line+"\n";
-	    }
-	    return output;
-	}
-
-	private void runProcess(String command) throws IOException, InterruptedException
-	{
-		Process pro = Runtime.getRuntime().exec(command);
-		output = "";
-		String err = printLines(pro.getErrorStream());
-		if(err.equals(""))
-		{
-			cosoleText(printLines(pro.getInputStream()));
-		}
-		else
-		{
-			cosoleText(err);
-		}
-//		cosoleText(printLines(pro.getInputStream()));
-//		cosoleText(printLines(pro.getErrorStream()));
-		pro.waitFor();
-	}
-	
-	private String getFiles(StringBuilder currentProject)
-	{
-		File folder = new File(currentProject.toString());
-		String[] files = folder.list();
-		String fileNames = "";
-		
-		for(String file : files)
-		{
-			fileNames += currentProject.toString()+"\\"+file+" ";
-		}
-		
-		return fileNames;
-	}
-	
 }
