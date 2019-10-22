@@ -16,6 +16,9 @@ import javax.swing.filechooser.FileSystemView;
 public class projects
 {
 	
+	/*
+	 * Function that utilizes a JFileChooser for a user to select a project file to open
+	 */
 	public void openProject(String saveDirectory, StringBuilder currentProject) throws WorkspaceFolderException
 	{
 
@@ -41,11 +44,17 @@ public class projects
 		}
 	}
 	
+	/*
+	 * Function that removes the current open project name when a project is closed
+	 */
 	public void closeProject(StringBuilder currentProject)
 	{
 		currentProject.setLength(0);
 	}
 	
+	/*
+	 * Function that creates anew project and stores it in the IDE workspace
+	 */
 	public void createNewProject(String saveDirectory, StringBuilder currentProject) throws IOException, NoProjectNameException, WorkspaceFolderException
 	{
 		JFrame frame = new JFrame();
