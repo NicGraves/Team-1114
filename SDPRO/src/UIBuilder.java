@@ -5,8 +5,11 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
@@ -47,7 +50,7 @@ public class UIBuilder
 	
 	//Instantiates the border titles of the project properties window and the text editor window to their default titles
 	TitledBorder projectTitle = BorderFactory.createTitledBorder( new EtchedBorder (), "Project Properties");
-	TitledBorder fileTitle = BorderFactory.createTitledBorder( new EtchedBorder (), "Editor");
+	static TitledBorder fileTitle = BorderFactory.createTitledBorder( new EtchedBorder (), "Editor");
 	
 	/*
 	 * This function creates the JMenu bar that can be found along the top of the text editor.
@@ -436,68 +439,4 @@ public class UIBuilder
 		}
 		textEditor.repaint();
 	}
-	
-	public void compileExecute(StringBuilder currentProject, StringBuilder currentFile) throws IOException, InterruptedException, ProjectNotOpenException, NoFileOpen
-	{
-		if(currentProject.length() != 0 && currentFile.length() != 0)
-		{
-	    	runProcess("javac -d Class "+getFiles(currentProject));
-	    	if(output.equals(""))
-	    	{
-				runProcess("java -cp Class "+currentFile.toString());
-	    	}
-		}
-		else if(currentProject.length() == 0)
-		{
-			throw new ProjectNotOpenException("Please open a Project Folder to run.");
-		}
-		else if(currentFile.toString().equals(""))
-		{
-			throw new NoFileOpen("Please open a File to run.");
-		}
-	}
-	
-	private String printLines(InputStream ins) throws IOException
-	{
-		String line = null;
-	    BufferedReader in = new BufferedReader(new InputStreamReader(ins));
-	    while ((line = in.readLine()) != null) 
-	    {
-	    	output += line+"\n";
-	    }
-	    return output;
-	}
-
-	private void runProcess(String command) throws IOException, InterruptedException
-	{
-		Process pro = Runtime.getRuntime().exec(command);
-		output = "";
-		String err = printLines(pro.getErrorStream());
-		if(err.equals(""))
-		{
-			cosoleText(printLines(pro.getInputStream()));
-		}
-		else
-		{
-			cosoleText(err);
-		}
-//		cosoleText(printLines(pro.getInputStream()));
-//		cosoleText(printLines(pro.getErrorStream()));
-		pro.waitFor();
-	}
-	
-	private String getFiles(StringBuilder currentProject)
-	{
-		File folder = new File(currentProject.toString());
-		String[] files = folder.list();
-		String fileNames = "";
-		
-		for(String file : files)
-		{
-			fileNames += currentProject.toString()+"\\"+file+" ";
-		}
-		
-		return fileNames;
-	}
-	
 }
