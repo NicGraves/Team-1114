@@ -26,7 +26,7 @@ import javax.swing.event.TreeSelectionListener;
 
 public class UIBuilder 
 {
-
+    private static StyledDocument doc;
 	private static String saveDirectory = "Project_Directory"; //Name of the IDE workspace where all projects get saved
 	static StringBuilder currentProject = new StringBuilder(""); //Saves the path of the current open project
 	static StringBuilder currentFile = new StringBuilder(""); //Saves the name of the current open file
@@ -266,6 +266,8 @@ public class UIBuilder
 		//Get all the necessary keywords from the Keywords document
 		try
 		{
+                        //Leave this in for Jared :) 
+                        //in = new FileReader("Keywords.txt");
 			in = new FileReader("SDPRO\\src\\Keywords.txt");
 	      	int character;
 	      	while ((character = in.read()) != 10 && character != -1)
@@ -282,17 +284,20 @@ public class UIBuilder
 		{
 			e.printStackTrace();
 		}
-		doc = new StyledDocument(blueKeywords, redKeywords); //Pass the necessary keywords to the Style Document
-		ta = new JTextPane(doc); //Style the TextPane with the style document
-		
-		textEditor.setBorder(fileTitle);
+		doc = new StyledDocument(blueKeywords, redKeywords, keywords);
+		ta = new JTextPane(doc);
+                //Set settings for the Keywords panel
+                keywords.setPreferredSize(new Dimension(200, 25));
+                keywords.setBorder(new EtchedBorder());
+                keywords.setEditable(false);
+                
+		textEditor.setBorder (fileTitle); //create a border around the JPanel with the name "Text Editor"
 		
         JScrollPane scroll = new JScrollPane ( ta ); //Create a new JScrollPane and add the JTextArea
 	    scroll.setVerticalScrollBarPolicy ( ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED ); //Set the scroll bar to only appear when necessary
 	    
-	    textEditor.add(scroll, BorderLayout.CENTER); 
-
-	    
+	    textEditor.add(scroll, BorderLayout.CENTER);
+	    textEditor.add(keywords, BorderLayout.PAGE_END);
 		return textEditor;
 	}
 	
@@ -329,7 +334,7 @@ public class UIBuilder
         tree.setModel(model); //Set the model as the FileTree class model
         /***************************************************************************************
         *    Title: FileSelectorModel  
-        *    Author:  Sébastien Le Callonnec
+        *    Author:  Sï¿½bastien Le Callonnec
         *    Date: September 18, 2019
         *    Code version: version 1.0
         *    Availability: https://www.weblogism.com/item/300/use-jtree-to-display-files-in-filesystem-ii
@@ -434,4 +439,68 @@ public class UIBuilder
 		}
 		textEditor.repaint();
 	}
+	
+	public void compileExecute(StringBuilder currentProject, StringBuilder currentFile) throws IOException, InterruptedException, ProjectNotOpenException, NoFileOpen
+	{
+		if(currentProject.length() != 0 && currentFile.length() != 0)
+		{
+	    	runProcess("javac -d Class "+getFiles(currentProject));
+	    	if(output.equals(""))
+	    	{
+				runProcess("java -cp Class "+currentFile.toString());
+	    	}
+		}
+		else if(currentProject.length() == 0)
+		{
+			throw new ProjectNotOpenException("Please open a Project Folder to run.");
+		}
+		else if(currentFile.toString().equals(""))
+		{
+			throw new NoFileOpen("Please open a File to run.");
+		}
+	}
+	
+	private String printLines(InputStream ins) throws IOException
+	{
+		String line = null;
+	    BufferedReader in = new BufferedReader(new InputStreamReader(ins));
+	    while ((line = in.readLine()) != null) 
+	    {
+	    	output += line+"\n";
+	    }
+	    return output;
+	}
+
+	private void runProcess(String command) throws IOException, InterruptedException
+	{
+		Process pro = Runtime.getRuntime().exec(command);
+		output = "";
+		String err = printLines(pro.getErrorStream());
+		if(err.equals(""))
+		{
+			cosoleText(printLines(pro.getInputStream()));
+		}
+		else
+		{
+			cosoleText(err);
+		}
+//		cosoleText(printLines(pro.getInputStream()));
+//		cosoleText(printLines(pro.getErrorStream()));
+		pro.waitFor();
+	}
+	
+	private String getFiles(StringBuilder currentProject)
+	{
+		File folder = new File(currentProject.toString());
+		String[] files = folder.list();
+		String fileNames = "";
+		
+		for(String file : files)
+		{
+			fileNames += currentProject.toString()+"\\"+file+" ";
+		}
+		
+		return fileNames;
+	}
+	
 }
