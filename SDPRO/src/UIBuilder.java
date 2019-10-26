@@ -26,19 +26,20 @@ import javax.swing.event.TreeSelectionListener;
 
 public class UIBuilder 
 {
-    private static StyledDocument doc;
-	private static String saveDirectory = "Project_Directory"; //Name of the IDE workspace where all projects get saved
-	static StringBuilder currentProject = new StringBuilder(""); //Saves the path of the current open project
-	static StringBuilder currentFile = new StringBuilder(""); //Saves the name of the current open file
+    private StyledDocument doc;
+	private String saveDirectory = "Project_Directory"; //Name of the IDE workspace where all projects get saved
+	StringBuilder currentProject = new StringBuilder(""); //Saves the path of the current open project
+	StringBuilder currentFile = new StringBuilder(""); //Saves the name of the current open file
 	
 	//Instantiates all the necessary windows on the text editor
     JTextArea console = new JTextArea();
 	JMenuBar menuBar = new JMenuBar(); 
 	JPanel textEditor = new JPanel(new BorderLayout());
 	JTextArea keywords = new JTextArea();
-	static JPanel projectProperties = new JPanel(new BorderLayout());
-	static JTextPane ta = new JTextPane();
+	JPanel projectProperties = new JPanel(new BorderLayout());
+	JTextPane ta = new JTextPane();
 	static JTree tree = new JTree();
+	static JScrollPane spectralFilesScrollPane = new JScrollPane(tree);
 	
 	//Instantiates all the necessary objects
 	private projects p = new projects();
@@ -78,12 +79,14 @@ public class UIBuilder
                 try 
                 {
 					p.openProject(saveDirectory, currentProject); //Calls the openProject function
+	                projectPropertiesDisplay(); //Reset the project properties window to display the open projects files
 					resetProjectTitle(); //Reset the projectPoperties title to the name of the open project
+            		displayText(f.closeFile()); //Clear the current text open in the editor
+            		currentFile.setLength(0); //Clear the name of the currently opened project
+	            	resetFileTitle(); //Reset the text editor window title to the default 
 				} 
                 catch (WorkspaceFolderException e1) 
-                {
-				}
-                projectPropertiesDisplay(); //Reset the project properties window to display the open projects files
+                {}
             }
         });
 	    
@@ -94,9 +97,11 @@ public class UIBuilder
             @Override
             public void actionPerformed(ActionEvent e) 
             {
+        		displayText(f.closeFile()); //Clear the current text open in the editor
+        		currentFile.setLength(0); //Clear the name of the currently opened project
                 p.closeProject(currentProject);
-                projectPropertiesClear();
 				resetProjectTitle();
+            	resetFileTitle(); //Reset the text editor window title to the default 
             }
         });
 	    
@@ -109,8 +114,11 @@ public class UIBuilder
             {
             	try 
             	{
+            		displayText(f.closeFile()); //Clear the current text open in the editor
+            		currentFile.setLength(0); //Clear the name of the currently opened project
 					p.createNewProject(saveDirectory, currentProject); //Call the create new project function 
 					resetProjectTitle(); //Reset the project properties title to the newly created project name
+	            	resetFileTitle(); //Reset the text editor window title to the default 
 				} 
             	catch (IOException e1) 
             	{} 
@@ -153,8 +161,8 @@ public class UIBuilder
             @Override
             public void actionPerformed(ActionEvent e) 
             {
-        		currentFile.setLength(0); //Clear the current open file name
-            	displayText(f.closeFile()); //Clear the text that is currently displayed on the text editor window
+        		displayText(f.closeFile()); //Clear the current text open in the editor
+        		currentFile.setLength(0); //Clear the name of the currently opened project
             	resetFileTitle(); //Reset the text editor window title to the default 
             }
         });
@@ -168,6 +176,7 @@ public class UIBuilder
             {
                 try 
                 {
+            		currentFile.setLength(0); //Clear the name of the currently opened project
 					f.createNewFile(currentProject, currentFile); //Call the create a new file function
 					projectPropertiesDisplay(); //Reset the project properties display
 					resetFileTitle(); //Reset the text editor window title to the newly created file
@@ -192,9 +201,9 @@ public class UIBuilder
             {
             	try 
             	{
-            		currentFile.setLength(0); //Clear the name of the currently opened project
 					displayText(f.removeFile(currentProject, currentFile)); //Clear the text on the text editor window
 					projectPropertiesDisplay(); //Reset the project properties display window
+            		currentFile.setLength(0); //Clear the name of the currently opened project
 					resetFileTitle(); //Reset the text editor window title
 				} 
             	catch (NoFileNameException e1) 
@@ -328,8 +337,8 @@ public class UIBuilder
 	 */
 	public void projectPropertiesDisplay()
 	{
-		JScrollPane spectralFilesScrollPane = new JScrollPane(tree);
-		projectPropertiesClear();
+		tree.setModel(null);
+		redoProjectProperties();
 		FileTree model = new FileTree(currentProject.toString()); //Create a new FileTree using the Selected File
         tree.setModel(model); //Set the model as the FileTree class model
         /***************************************************************************************
@@ -370,20 +379,11 @@ public class UIBuilder
         projectProperties.add(spectralFilesScrollPane); //Add to projectProperties JPanel
         redoProjectProperties();
 	}
-
-	/*
-	 * This function clears the project properties window when a project is closed
-	 */
-	public static void projectPropertiesClear()
-	{
-		tree.setModel(null);
-		redoProjectProperties();
-	}
 	
 	/*
 	 * This function refreshes the project properties window when... A new project is opened or a new file is created or removed
 	 */
-	public static void redoProjectProperties()
+	public void redoProjectProperties()
 	{
 		projectProperties.revalidate();
         projectProperties.repaint();
@@ -392,7 +392,7 @@ public class UIBuilder
 	/*
 	 * Displayed the open file on the text editor
 	 */
-	public static void displayText(String line)
+	public void displayText(String line)
 	{
 		if(line != null)
 		{
