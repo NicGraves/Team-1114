@@ -78,12 +78,12 @@ public class UIBuilder
             {
                 try 
                 {
-					p.openProject(saveDirectory, currentProject); //Calls the openProject function
-	                projectPropertiesDisplay(); //Reset the project properties window to display the open projects files
-					resetProjectTitle(); //Reset the projectPoperties title to the name of the open project
             		displayText(f.closeFile()); //Clear the current text open in the editor
             		currentFile.setLength(0); //Clear the name of the currently opened project
 	            	resetFileTitle(); //Reset the text editor window title to the default 
+					p.openProject(saveDirectory, currentProject); //Calls the openProject function
+	                projectPropertiesDisplay(); //Reset the project properties window to display the open projects files
+					resetProjectTitle(); //Reset the projectPoperties title to the name of the open project
 				} 
                 catch (WorkspaceFolderException e1) 
                 {}
@@ -99,9 +99,10 @@ public class UIBuilder
             {
         		displayText(f.closeFile()); //Clear the current text open in the editor
         		currentFile.setLength(0); //Clear the name of the currently opened project
+            	resetFileTitle(); //Reset the text editor window title to the default
                 p.closeProject(currentProject);
 				resetProjectTitle();
-            	resetFileTitle(); //Reset the text editor window title to the default 
+                projectPropertiesDisplay(); //Reset the project properties window to display the open projects files 
             }
         });
 	    
@@ -116,9 +117,11 @@ public class UIBuilder
             	{
             		displayText(f.closeFile()); //Clear the current text open in the editor
             		currentFile.setLength(0); //Clear the name of the currently opened project
+	            	resetFileTitle(); //Reset the text editor window title to the default
+	                p.closeProject(currentProject);
 					p.createNewProject(saveDirectory, currentProject); //Call the create new project function 
 					resetProjectTitle(); //Reset the project properties title to the newly created project name
-	            	resetFileTitle(); //Reset the text editor window title to the default 
+	                projectPropertiesDisplay(); //Reset the project properties window to display the open projects files
 				} 
             	catch (IOException e1) 
             	{} 
@@ -348,28 +351,37 @@ public class UIBuilder
         *    Code version: version 1.0
         *    Availability: https://www.weblogism.com/item/300/use-jtree-to-display-files-in-filesystem-ii
         *    Modified slightly by the team to work with our project
-        *
         ***************************************************************************************/
         JLabel status = new JLabel(currentProject.toString());
-        tree.addTreeSelectionListener(new TreeSelectionListener() {
-            public void valueChanged(TreeSelectionEvent e) {
+        tree.addTreeSelectionListener(new TreeSelectionListener() 
+        {
+            public void valueChanged(TreeSelectionEvent e) 
+            {
                 folderNameGetter selectedNode = (folderNameGetter) tree.getLastSelectedPathComponent();
-                status.setText(selectedNode.getAbsolutePath());
-                if (selectedNode.isFile()) {
-                    try {
-                    	currentFile.setLength(0);
-                    	currentFile.append(selectedNode);
-                    	resetFileTitle();
-                        BufferedReader br = new BufferedReader(new FileReader(selectedNode.getAbsolutePath()));
-                        String line = "";
-                        String l = "";
-                        while ((line = br.readLine()) != null) {
-                        	l += line + "\n" ;
+                if(selectedNode != null)
+                {
+                	status.setText(selectedNode.getAbsolutePath());
+                    if (selectedNode.isFile()) 
+                    {
+                        try 
+                        {
+                        	currentFile.setLength(0);
+                        	currentFile.append(selectedNode);
+                        	resetFileTitle();
+                            BufferedReader br = new BufferedReader(new FileReader(selectedNode.getAbsolutePath()));
+                            String line = "";
+                            String l = "";
+                            while ((line = br.readLine()) != null) 
+                            {
+                            	l += line + "\n" ;
+                            }
+                            displayText(l);
+                            br.close();
+                        } 
+                        catch (Exception exc) 
+                        {
+                            exc.printStackTrace();
                         }
-                        displayText(l);
-                        br.close();
-                    } catch (Exception exc) {
-                        exc.printStackTrace();
                     }
                 }
             }
