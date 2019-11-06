@@ -29,7 +29,7 @@ public class executeCompile
 	 */
 	private ArrayList<String> javaCommadBuilder(StringBuilder currentFile)
 	{
-		ArrayList<String> command = new ArrayList<String>(Arrays.asList("java","-cp","Class"));
+		ArrayList<String> command = new ArrayList<String>(Arrays.asList("java", "-cp","Class"));
 		command.add(currentFile.toString().substring(0, currentFile.toString().indexOf(".")));
 		return command;
 	}
