@@ -59,7 +59,7 @@ public class CompilingClassLoader extends ClassLoader
 		Class clas = null;
 		//First, see if we've already dealt with this one
 		clas = findLoadedClass( name );
-		//System.out.println( "findLoadedClass: "+clas );
+		System.out.println( "findLoadedClass: "+clas );
 		//Create a pathname from the class name
 		//E.g. java.lang.Object => java/lang/Object
 		String fileStub = name.replace( '.', '/' );
@@ -69,8 +69,8 @@ public class CompilingClassLoader extends ClassLoader
 		String classFilename = fileStub+".class";
 		File javaFile = new File( javaFilename );
 		File classFile = new File( classFilename );
-		//System.out.println( "j "+javaFile.lastModified()+" c "+
-		//classFile.lastModified() );
+		System.out.println( "j "+javaFile.lastModified()+" c "+
+		classFile.lastModified() );
 		//First, see if we want to try compiling. We do if (a) there
 		//is source code, and either (b0) there is no object code,
 		//or (b1) there is object code, but it's older than the source
@@ -109,14 +109,14 @@ public class CompilingClassLoader extends ClassLoader
 			//mean that we are dealing with a class in a library,
 			// such as java.lang.Object
 		}
-		//System.out.println( "defineClass: "+clas );
+		System.out.println( "defineClass: "+clas );
 		// Maybe the class is in a library -- try loading
 		// the normal way
 		if (clas==null) 
 		{
 			clas = findSystemClass( name );
 		}
-		//System.out.println( "findSystemClass: "+clas );
+		System.out.println( "findSystemClass: "+clas );
 		// Resolve the class, if any, but only if the "resolve"
 		// flag is set to true
 		if (resolve && clas != null)

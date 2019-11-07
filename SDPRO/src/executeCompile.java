@@ -29,7 +29,7 @@ public class executeCompile
 	 */
 	private ArrayList<String> javaCommadBuilder(StringBuilder currentFile)
 	{
-		ArrayList<String> command = new ArrayList<String>(Arrays.asList("java", "-cp", "Class"));
+		ArrayList<String> command = new ArrayList<String>(Arrays.asList("java", "-cp", "Class", "CCLRun"));
 		command.add(currentFile.toString().substring(0, currentFile.toString().indexOf(".")));
 		return command;
 	}
@@ -42,8 +42,8 @@ public class executeCompile
 		ProcessBuilder processBuilder = new ProcessBuilder(javacCommandBuilder(currentProject, currentFile));
 		Process process = processBuilder.start();
 
-		//process = new ProcessBuilder(new String[] {"javac", "SDPRO\\src\\CompilingClassLoader.java"} ).start();
-		//process = new ProcessBuilder(new String[] {"javac", "SDPRO\\src\\CCLRun.java"} ).start();
+		process = new ProcessBuilder(new String[] {"javac", "-d", "Class", "SDPRO\\src\\CompilingClassLoader.java"} ).start();
+		process = new ProcessBuilder(new String[] {"javac", "-cp", "Class","-d", "Class", "SDPRO\\src\\CCLRun.java"} ).start();
 		
 		if( process.getErrorStream().read() != -1 )
 		{

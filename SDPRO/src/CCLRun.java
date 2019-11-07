@@ -7,6 +7,7 @@ public class CCLRun
 {
 	static public void main( String args[] ) throws Exception 
 	{
+		System.out.println("Test");
 		// The first argument is the Java program (class) the user
 		// wants to run
 		String progClass = args[0];
