@@ -69,8 +69,8 @@ public class CompilingClassLoader extends ClassLoader
 		String classFilename = fileStub+".class";
 		File javaFile = new File( javaFilename );
 		File classFile = new File( classFilename );
-		System.out.println( "j "+javaFile.lastModified()+" c "+
-		classFile.lastModified() );
+		//System.out.println( "j "+javaFile.lastModified()+" c "+
+		//classFile.lastModified() );
 		//First, see if we want to try compiling. We do if (a) there
 		//is source code, and either (b0) there is no object code,
 		//or (b1) there is object code, but it's older than the source
