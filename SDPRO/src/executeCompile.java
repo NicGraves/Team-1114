@@ -6,8 +6,10 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class executeCompile 
-{	
+
+public class executeCompile
+{
+	
 	/*
 	 * Function that gets all the files from the project folder and stores them in an array list for compiling 
 	 */
@@ -29,7 +31,7 @@ public class executeCompile
 	 */
 	private ArrayList<String> javaCommadBuilder(StringBuilder currentFile)
 	{
-		ArrayList<String> command = new ArrayList<String>(Arrays.asList("java", "-cp", "Class", "CCLRun"));
+		ArrayList<String> command = new ArrayList<String>(Arrays.asList("java", "-cp", "Class"));
 		command.add(currentFile.toString().substring(0, currentFile.toString().indexOf(".")));
 		return command;
 	}
@@ -42,14 +44,22 @@ public class executeCompile
 		ProcessBuilder processBuilder = new ProcessBuilder(javacCommandBuilder(currentProject, currentFile));
 		Process process = processBuilder.start();
 
-		process = new ProcessBuilder(new String[] {"javac", "-d", "Class", "SDPRO\\src\\CompilingClassLoader.java"} ).start();
-		process = new ProcessBuilder(new String[] {"javac", "-cp", "Class","-d", "Class", "SDPRO\\src\\CCLRun.java"} ).start();
+		Process processCCLoader = new ProcessBuilder(new String[] {"javac", "-d", "Class", "SDPRO\\src\\CompilingClassLoader.java"} ).start();
+		Process processCCL = new ProcessBuilder(new String[] {"javac", "-cp", "Class","-d", "Class", "SDPRO\\src\\CCLRun.java"} ).start();
 		
-		if( process.getErrorStream().read() != -1 )
+		if(process.getErrorStream().read() != -1)
 		{
 			return(print("Compilation Errors",process.getErrorStream()));
 		}
-		if( process.exitValue() == 0 )
+		if(processCCLoader.getErrorStream().read() != -1)
+		{
+			return(print("Compilation Errors",processCCLoader.getErrorStream()));
+		}
+		if(processCCL.getErrorStream().read() != -1)
+		{
+			return(print("Compilation Errors",processCCL.getErrorStream()));
+		}
+		if(process.exitValue() == 0)
 		{
 			process = new ProcessBuilder(javaCommadBuilder(currentFile)).start();
 			if( process.getErrorStream().read() != -1 )
@@ -71,12 +81,15 @@ public class executeCompile
 	{
 		BufferedReader in = new BufferedReader(new InputStreamReader(input));
 		String text = "";
-		String line = null;
-		while((line = in.readLine()) != null )
+		String line = "";
+		while(input.read() != -1)
 		{
+			line = in.readLine();
 			text += line + "\n";
 		}
 		in.close();
 		return text;
 	}
 }
+
+

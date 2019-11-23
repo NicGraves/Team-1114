@@ -5,8 +5,20 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.PrintStream;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingDeque;
 
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
@@ -16,6 +28,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.JTextField;
 import javax.swing.JTextPane;
 import javax.swing.JTree;
 import javax.swing.ScrollPaneConstants;
@@ -23,16 +36,19 @@ import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
+import javax.swing.text.JTextComponent;
 
-public class UIBuilder 
+public class UIBuilder
 {
+	static BlockingQueue blockingQueue = new LinkedBlockingDeque();
     private StyledDocument doc;
 	private String saveDirectory = "Project_Directory"; //Name of the IDE workspace where all projects get saved
 	StringBuilder currentProject = new StringBuilder(""); //Saves the path of the current open project
 	StringBuilder currentFile = new StringBuilder(""); //Saves the name of the current open file
 	
 	//Instantiates all the necessary windows on the text editor
-    JTextArea console = new JTextArea();
+    static JTextArea console = new JTextArea();
+    static JTextField textField;
 	JMenuBar menuBar = new JMenuBar(); 
 	JPanel textEditor = new JPanel(new BorderLayout());
 	JTextArea keywords = new JTextArea();
@@ -234,7 +250,8 @@ public class UIBuilder
 	            try
 	    		{
 	            	f.saveFile(ta, currentProject, currentFile); //Save the current open file
-	            	cosoleText(ec.execute(currentProject, currentFile)); //Execute the current open file
+	            	//cosoleText(ec.execute(currentProject, currentFile)); //Execute the current open file
+	            	cosoleText();
 	    		}
 	    		catch(ProjectNotOpenException e1)
 	    		{}
@@ -330,6 +347,8 @@ public class UIBuilder
         JScrollPane Cscroll = new JScrollPane (console); //Create a JScrollPane object
         Cscroll.setVerticalScrollBarPolicy ( ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED ); //Set the scroll bars to appear when necessary
         output.add(Cscroll); //Add the scroll to the JPanel
+        textField = new JTextField();
+        output.add(BorderLayout.PAGE_END, textField);
         
 		return output;
 	}
@@ -419,6 +438,117 @@ public class UIBuilder
 	{
 		console.setText(line);
 	}
+	/*
+	 * Function that gets all the files from the project folder and stores them in an array list for compiling 
+	 */
+	private ArrayList<String> javacCommandBuilder(StringBuilder currentProject, StringBuilder currentFile)
+	{
+		File folder = new File(currentProject.toString());
+		String[] files = folder.list();
+		ArrayList<String> command = new ArrayList<String>(Arrays.asList("javac", "-d", "Class"));
+		
+		for(String file : files)
+		{
+			command.add(currentProject.toString()+"\\"+file);
+		}
+		return command;
+	}
+	
+	/*
+	 * Function that gets the current open file and runs the file
+	 */
+	private ArrayList<String> javaCommadBuilder(StringBuilder currentFile)
+	{
+		ArrayList<String> command = new ArrayList<String>(Arrays.asList("java", "-cp", "Class"));
+		command.add(currentFile.toString().substring(0, currentFile.toString().indexOf(".")));
+		return command;
+	}
+	
+	public void cosoleText() throws IOException
+	{
+		console.setText("");
+		ProcessBuilder processBuilder = new ProcessBuilder(javacCommandBuilder(currentProject, currentFile));
+		Process process = processBuilder.start();
+
+		Process processCCLoader = new ProcessBuilder(new String[] {"javac", "-d", "Class", "SDPRO\\src\\CompilingClassLoader.java"} ).start();
+		Process processCCL = new ProcessBuilder(new String[] {"javac", "-cp", "Class","-d", "Class", "SDPRO\\src\\CCLRun.java"} ).start();
+		
+		if(process.getErrorStream().read() != -1)
+		{
+			InputStream in = process.getErrorStream();
+			BufferedReader br = new BufferedReader(new InputStreamReader(in));
+			String line = null;
+			while (in.read() != -1)
+			{
+				line = br.readLine();
+				console.append(line + "\n");
+			}
+		}
+		if(processCCLoader.getErrorStream().read() != -1)
+		{
+			InputStream in = processCCLoader.getErrorStream();
+			BufferedReader br = new BufferedReader(new InputStreamReader(in));
+			String line = null;
+			while (in.read() != -1)
+			{
+				line = br.readLine();
+				console.append(line + "\n");
+			}
+		}
+		if(processCCL.getErrorStream().read() != -1)
+		{
+			InputStream in = processCCL.getErrorStream();
+			BufferedReader br = new BufferedReader(new InputStreamReader(in));
+			String line = null;
+			while (in.read() != -1)
+			{
+				line = br.readLine();
+				console.append(line + "\n");
+			}
+		}
+		if(process.exitValue() == 0)
+		{
+			ExecutorService service = Executors.newFixedThreadPool(3);
+			service.submit(new ProcessTask(javaCommadBuilder(currentFile)));
+//			ProcessBuilder pb = new ProcessBuilder(javaCommadBuilder(currentFile));
+//			pb.redirectErrorStream(true);
+//		    Process p = pb.start();
+//		    InputStream out = p.getInputStream();
+//		    OutputStream in = p.getOutputStream();
+//
+//		    byte[] buffer = new byte[4000];
+//		    while (isAlive(p)) 
+//		    {
+//		      int no = out.available();
+//		      if (no > 0) 
+//		      {
+//		        int n = out.read(buffer, 0, Math.min(no, buffer.length));
+//		        String line = new String(buffer, 0, n);
+//		        console.update(console.getGraphics());
+//		        console.append(line);
+//		      }
+//
+//			  
+//		      int ni = System.in.available();
+//		      if (ni > 0) 
+//		      {
+//		        int n = System.in.read(buffer, 0, Math.min(ni, buffer.length));
+//		        in.write(buffer, 0, n);
+//		        in.flush();
+//		      }
+//		    }
+		}
+	}
+	
+	  public static boolean isAlive(Process p) {
+		    try {
+		      p.exitValue();
+		      return false;
+		    }
+		    catch (IllegalThreadStateException e) {
+		      return true;
+		    }
+		  }
 	
 	/*
 	 * Reset the title of the project properties window when a new project 
