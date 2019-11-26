@@ -25,6 +25,7 @@ public class StyledDocument extends DefaultStyledDocument
     private final StyleContext style = StyleContext.getDefaultStyleContext();
     private final AttributeSet redColor = style.addAttribute(style.getEmptySet(), StyleConstants.Foreground, Color.RED);
     private final AttributeSet blueColor = style.addAttribute(style.getEmptySet(), StyleConstants.Foreground, Color.BLUE);
+    private final AttributeSet greenColor = style.addAttribute(style.getEmptySet(), StyleConstants.Foreground, Color.decode("#008F11"));
     private final AttributeSet blackColor = style.addAttribute(style.getEmptySet(), StyleConstants.Foreground, Color.BLACK);
     private final String blueKeywords;
     private final String[] redKeywords;
@@ -42,6 +43,49 @@ public class StyledDocument extends DefaultStyledDocument
             redKeyString = redKeyString + s + "|";
         }
         redKeyString = redKeyString.substring(0, redKeyString.length() - 1);
+    }
+    //returns true if the index in inside a string literal declaration
+    private boolean isInString(String txt, int index)
+    {
+        int openIndex = -1;
+        int closeIndex = 0;
+        for(int i = 0; i < txt.length(); i++)
+        {
+            //if we find a quote, it's either the open or close quote
+            if(txt.charAt(i) == '"')
+            {
+                if(i > 0 && txt.charAt(i-1) == '\\')
+                    continue;
+                //if the index of the last open quote is smaller than the last closed quote,
+                //we know this is a new open quote and move the index
+                if(openIndex < closeIndex)
+                    openIndex = i;
+                else
+                {
+                    closeIndex = i;
+                    //If we just closed a quote, find out if our index is in the bounds of the quote
+                    if(index < closeIndex && index > openIndex)
+                        return true;
+                }
+            }
+        }
+        //If the index is not within the bounds of any quote, but is after a hanging open quote, consider it in a string
+        return index < txt.length() && index > openIndex && closeIndex < openIndex && openIndex != -1;
+    }
+    //finds the next instance of a quote
+    private int nextQuote(String txt, int index)
+    {
+        for(int x = index; x < txt.length(); x++)
+        {
+            if(txt.charAt(x) == '"')
+                return x;
+        }
+        return txt.length() - 1;
+    }
+    //If an end quote is deleted, the quotes need to be fixed
+    private void fixQuotes(String txt) throws BadLocationException
+    {
+        insertString(-1, txt, blackColor);
     }
     //finds the first nonword character in the input text before the index given, used for blue keywords
     private int firstNonwordChar (String txt, int index)
@@ -130,10 +174,31 @@ public class StyledDocument extends DefaultStyledDocument
     @Override
     public void insertString (int offset, String str, AttributeSet a) throws BadLocationException
     {
-        super.insertString(offset, str, a);
+        if(offset != -1)
+            super.insertString(offset, str, a);
+        else
+        {
+            offset = 0;
+            numBlueKeywords = 0;
+            numRedKeywords = 0;
+        }
+            
+        
+        if(str.equals("\""))
+        {
+            super.insertString(offset, str, a);
+            setCharacterAttributes(offset, 2, greenColor, false);
+            return;
+        }
         
         String txt = getText(0, getLength()); //get all text in the box
 
+        if(isInString(txt, offset))
+        {
+            setCharacterAttributes(offset, 1, greenColor, false);
+            return;
+        }
+        
         //Set up indices to find blue keywords
         int beforeIndexBlue = firstNonwordChar(txt, offset);
         if(beforeIndexBlue < 0) beforeIndexBlue = 0;
@@ -162,7 +227,8 @@ public class StyledDocument extends DefaultStyledDocument
                 //if the text we're looking at is a keyword, change it's color
                 if (txt.substring(indexLeftBlue, indexRightBlue).matches("(\\s)*(\\W)*(" + blueKeywords + ")"))
                 {
-                    numBlueKeywords++;
+                    if(!isInString(txt, indexLeftBlue+1))
+                        numBlueKeywords++;
                     setCharacterAttributes(indexLeftBlue, indexRightBlue - indexLeftBlue, blueColor, false);
                 }
                 else
@@ -189,7 +255,8 @@ public class StyledDocument extends DefaultStyledDocument
                 {
                     while(nonkeyChar(txt.charAt(indexLeftRed)))
                         indexLeftRed++;
-                    numRedKeywords++;
+                    if(!isInString(txt, indexLeftRed+1))
+                        numRedKeywords++;
                     setCharacterAttributes(indexLeftRed, indexRightRed - indexLeftRed, redColor, false);
                 }
                 //if not, and the substring isn't just what we just typed, then set it to black
@@ -207,7 +274,16 @@ public class StyledDocument extends DefaultStyledDocument
         {
             numRedKeywords--;
         }
-        
+        int at = 0;
+        int index;
+        while((index = nextQuote(txt, at)) != txt.length() - 1)
+        {
+            //setCharacterAttributes(at, (index - at), blackColor, false);
+            at = index + 1;
+            index = nextQuote(txt,at);
+            setCharacterAttributes(at - 1, (index - at + 2), greenColor, false);          
+            at = index + 1;
+        }
         //Display the number of blue and red keywords
         display.setText("Blue Keywords: " + numBlueKeywords + "     Red Keywords: " + numRedKeywords);
     }
@@ -216,6 +292,12 @@ public class StyledDocument extends DefaultStyledDocument
     public void remove(int offset, int length) throws BadLocationException
     {
         String txt = getText(0, getLength());
+        if(txt.length()> offset && txt.charAt(offset) == '\"')
+        {
+            super.remove(offset,length);
+            insertString(-1, getText(0, getLength()), blackColor);
+            return;
+        }
         int start = firstNonwordChar(txt, offset);
         int startRed = firstNonkeyChar(txt, offset);
         if(start < 0 && startRed < 0 && offset == 0 && (length == txt.length()))
@@ -234,7 +316,8 @@ public class StyledDocument extends DefaultStyledDocument
         String keyPrevious = txt.substring(startRed, lastNonkeyChar(txt, offset));
         
         super.remove(offset,length);
-        
+        if(isInString(txt, offset))
+            return;
         txt = getText(0, getLength());
         //Set up blue indices
         int beforeIndex = firstNonwordChar(txt, offset);

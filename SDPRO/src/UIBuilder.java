@@ -5,8 +5,15 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
@@ -16,6 +23,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.JTextField;
 import javax.swing.JTextPane;
 import javax.swing.JTree;
 import javax.swing.ScrollPaneConstants;
@@ -24,15 +32,17 @@ import javax.swing.border.TitledBorder;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 
-public class UIBuilder 
+public class UIBuilder
 {
+	//static BlockingQueue blockingQueue = new LinkedBlockingDeque();
     private StyledDocument doc;
 	private String saveDirectory = "Project_Directory"; //Name of the IDE workspace where all projects get saved
 	StringBuilder currentProject = new StringBuilder(""); //Saves the path of the current open project
 	StringBuilder currentFile = new StringBuilder(""); //Saves the name of the current open file
 	
 	//Instantiates all the necessary windows on the text editor
-    JTextArea console = new JTextArea();
+    static JTextArea console = new JTextArea();
+    static JTextField textField;
 	JMenuBar menuBar = new JMenuBar(); 
 	JPanel textEditor = new JPanel(new BorderLayout());
 	JTextArea keywords = new JTextArea();
@@ -44,12 +54,11 @@ public class UIBuilder
 	//Instantiates all the necessary objects
 	private projects p = new projects();
 	private files f = new files();
-	private executeCompile ec = new executeCompile();
 	//private messageDisplay msgD = new messageDisplay();
 	
 	//Instantiates the border titles of the project properties window and the text editor window to their default titles
 	TitledBorder projectTitle = BorderFactory.createTitledBorder( new EtchedBorder (), "Project Properties");
-	TitledBorder fileTitle = BorderFactory.createTitledBorder( new EtchedBorder (), "Editor");
+	static TitledBorder fileTitle = BorderFactory.createTitledBorder( new EtchedBorder (), "Editor");
 	
 	/*
 	 * This function creates the JMenu bar that can be found along the top of the text editor.
@@ -234,7 +243,7 @@ public class UIBuilder
 	            try
 	    		{
 	            	f.saveFile(ta, currentProject, currentFile); //Save the current open file
-	            	cosoleText(ec.execute(currentProject, currentFile)); //Execute the current open file
+	            	cosoleText();
 	    		}
 	    		catch(ProjectNotOpenException e1)
 	    		{}
@@ -330,6 +339,8 @@ public class UIBuilder
         JScrollPane Cscroll = new JScrollPane (console); //Create a JScrollPane object
         Cscroll.setVerticalScrollBarPolicy ( ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED ); //Set the scroll bars to appear when necessary
         output.add(Cscroll); //Add the scroll to the JPanel
+        textField = new JTextField();
+        output.add(BorderLayout.PAGE_END, textField);
         
 		return output;
 	}
@@ -418,6 +429,96 @@ public class UIBuilder
 	public void cosoleText(String line)
 	{
 		console.setText(line);
+	}
+	/*
+	 * Function that gets all the files from the project folder and stores them in an array list for compiling 
+	 */
+	private ArrayList<String> javacCommandBuilder(StringBuilder currentProject, StringBuilder currentFile)
+	{
+		File folder = new File(currentProject.toString());
+		String[] files = folder.list();
+		ArrayList<String> command = new ArrayList<String>(Arrays.asList("javac", "-d", "Class"));
+		
+		for(String file : files)
+		{
+			command.add(currentProject.toString()+"\\"+file);
+		}
+		return command;
+	}
+	
+	/*
+	 * Function that gets the current open file and runs the file
+	 */
+	private ArrayList<String> javaCommadBuilder(StringBuilder currentFile)
+	{
+		ArrayList<String> command = new ArrayList<String>(Arrays.asList("java", "-cp", "Class", "CCLRun"));
+		command.add(currentFile.toString().substring(0, currentFile.toString().indexOf(".")));
+		return command;
+	}
+	/*
+	 * Function that rewrites the console text
+	 */
+	
+	public void cosoleText() throws IOException
+	{
+		console.setText(""); //Clear the current text on the console
+		//Create  anew Process builder with the command to compile all the projects in the current open directory
+		ProcessBuilder processBuilder = new ProcessBuilder(javacCommandBuilder(currentProject, currentFile)); 
+		Process process = processBuilder.start(); //Start the process
+		//Create and start Processes for the CCL Loader and CCLRun functions
+		Process processCCLoader = new ProcessBuilder(new String[] {"javac", "-cp", "Class","-d", "Class", "SDPRO\\src\\CompilingClassLoader.java"} ).start();
+		Process processCCL = new ProcessBuilder(new String[] {"javac", "-cp", "Class","-d", "Class", "SDPRO\\src\\CCLRun.java"} ).start();
+		
+		//If the process fails on compile
+		if(process.getErrorStream().read() != -1)
+		{
+			//Get the process Error message
+			InputStream in = process.getErrorStream();
+			//Read the error message and paste it to the console
+			BufferedReader br = new BufferedReader(new InputStreamReader(in));
+			String line = null;
+			while (in.read() != -1)
+			{
+				line = br.readLine();
+				console.append(line + "\n");
+			}
+		}
+		//If the CCLpader process fails to compile
+		if(processCCLoader.getErrorStream().read() != -1)
+		{
+			//Get the process Error message
+			InputStream in = processCCLoader.getErrorStream();
+			//Read the error message and paste it to the console
+			BufferedReader br = new BufferedReader(new InputStreamReader(in));
+			String line = null;
+			while (in.read() != -1)
+			{
+				line = br.readLine();
+				console.append(line + "\n");
+			}
+		}
+		//If the CCLRun fails to compile
+		if(processCCL.getErrorStream().read() != -1)
+		{
+			//Get the process Error message
+			InputStream in = processCCL.getErrorStream();
+			//Read the error message and paste it to the console
+			BufferedReader br = new BufferedReader(new InputStreamReader(in));
+			String line = null;
+			while (in.read() != -1)
+			{
+				line = br.readLine();
+				console.append(line + "\n");
+			}
+		}
+		//If the process compiles
+		if(process.exitValue() == 0)
+		{
+			//Create a new thread
+			ExecutorService service = Executors.newFixedThreadPool(1);
+			//Run the java process in a thread
+			service.submit(new ProcessTask(javaCommadBuilder(currentFile)));
+		}
 	}
 	
 	/*
