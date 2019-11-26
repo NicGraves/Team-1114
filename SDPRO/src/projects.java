@@ -60,7 +60,7 @@ public class projects
 		if(!Files.exists(path) && temp.length() != 0)
 		{
 			currentProject.setLength(0);
-			currentProject.append(temp);
+			currentProject.append(saveDirectory+"\\"+temp);
 			Files.createDirectory(path);
 		}
 		else if(temp.length() == 0)

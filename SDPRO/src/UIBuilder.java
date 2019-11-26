@@ -10,15 +10,10 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.PrintStream;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.LinkedBlockingDeque;
 
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
@@ -36,11 +31,10 @@ import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
-import javax.swing.text.JTextComponent;
 
 public class UIBuilder
 {
-	static BlockingQueue blockingQueue = new LinkedBlockingDeque();
+	//static BlockingQueue blockingQueue = new LinkedBlockingDeque();
     private StyledDocument doc;
 	private String saveDirectory = "Project_Directory"; //Name of the IDE workspace where all projects get saved
 	StringBuilder currentProject = new StringBuilder(""); //Saves the path of the current open project
@@ -60,7 +54,6 @@ public class UIBuilder
 	//Instantiates all the necessary objects
 	private projects p = new projects();
 	private files f = new files();
-	private executeCompile ec = new executeCompile();
 	//private messageDisplay msgD = new messageDisplay();
 	
 	//Instantiates the border titles of the project properties window and the text editor window to their default titles
@@ -250,7 +243,6 @@ public class UIBuilder
 	            try
 	    		{
 	            	f.saveFile(ta, currentProject, currentFile); //Save the current open file
-	            	//cosoleText(ec.execute(currentProject, currentFile)); //Execute the current open file
 	            	cosoleText();
 	    		}
 	    		catch(ProjectNotOpenException e1)
@@ -459,23 +451,30 @@ public class UIBuilder
 	 */
 	private ArrayList<String> javaCommadBuilder(StringBuilder currentFile)
 	{
-		ArrayList<String> command = new ArrayList<String>(Arrays.asList("java", "-cp", "Class"));
+		ArrayList<String> command = new ArrayList<String>(Arrays.asList("java", "-cp", "Class", "CCLRun"));
 		command.add(currentFile.toString().substring(0, currentFile.toString().indexOf(".")));
 		return command;
 	}
+	/*
+	 * Function that rewrites the console text
+	 */
 	
 	public void cosoleText() throws IOException
 	{
-		console.setText("");
-		ProcessBuilder processBuilder = new ProcessBuilder(javacCommandBuilder(currentProject, currentFile));
-		Process process = processBuilder.start();
-
-		Process processCCLoader = new ProcessBuilder(new String[] {"javac", "-d", "Class", "SDPRO\\src\\CompilingClassLoader.java"} ).start();
+		console.setText(""); //Clear the current text on the console
+		//Create  anew Process builder with the command to compile all the projects in the current open directory
+		ProcessBuilder processBuilder = new ProcessBuilder(javacCommandBuilder(currentProject, currentFile)); 
+		Process process = processBuilder.start(); //Start the process
+		//Create and start Processes for the CCL Loader and CCLRun functions
+		Process processCCLoader = new ProcessBuilder(new String[] {"javac", "-cp", "Class","-d", "Class", "SDPRO\\src\\CompilingClassLoader.java"} ).start();
 		Process processCCL = new ProcessBuilder(new String[] {"javac", "-cp", "Class","-d", "Class", "SDPRO\\src\\CCLRun.java"} ).start();
 		
+		//If the process fails on compile
 		if(process.getErrorStream().read() != -1)
 		{
+			//Get the process Error message
 			InputStream in = process.getErrorStream();
+			//Read the error message and paste it to the console
 			BufferedReader br = new BufferedReader(new InputStreamReader(in));
 			String line = null;
 			while (in.read() != -1)
@@ -484,9 +483,12 @@ public class UIBuilder
 				console.append(line + "\n");
 			}
 		}
+		//If the CCLpader process fails to compile
 		if(processCCLoader.getErrorStream().read() != -1)
 		{
+			//Get the process Error message
 			InputStream in = processCCLoader.getErrorStream();
+			//Read the error message and paste it to the console
 			BufferedReader br = new BufferedReader(new InputStreamReader(in));
 			String line = null;
 			while (in.read() != -1)
@@ -495,9 +497,12 @@ public class UIBuilder
 				console.append(line + "\n");
 			}
 		}
+		//If the CCLRun fails to compile
 		if(processCCL.getErrorStream().read() != -1)
 		{
+			//Get the process Error message
 			InputStream in = processCCL.getErrorStream();
+			//Read the error message and paste it to the console
 			BufferedReader br = new BufferedReader(new InputStreamReader(in));
 			String line = null;
 			while (in.read() != -1)
@@ -506,49 +511,15 @@ public class UIBuilder
 				console.append(line + "\n");
 			}
 		}
+		//If the process compiles
 		if(process.exitValue() == 0)
 		{
-			ExecutorService service = Executors.newFixedThreadPool(3);
+			//Create a new thread
+			ExecutorService service = Executors.newFixedThreadPool(1);
+			//Run the java process in a thread
 			service.submit(new ProcessTask(javaCommadBuilder(currentFile)));
-//			ProcessBuilder pb = new ProcessBuilder(javaCommadBuilder(currentFile));
-//			pb.redirectErrorStream(true);
-//		    Process p = pb.start();
-//		    InputStream out = p.getInputStream();
-//		    OutputStream in = p.getOutputStream();
-//
-//		    byte[] buffer = new byte[4000];
-//		    while (isAlive(p)) 
-//		    {
-//		      int no = out.available();
-//		      if (no > 0) 
-//		      {
-//		        int n = out.read(buffer, 0, Math.min(no, buffer.length));
-//		        String line = new String(buffer, 0, n);
-//		        console.update(console.getGraphics());
-//		        console.append(line);
-//		      }
-//
-//			  
-//		      int ni = System.in.available();
-//		      if (ni > 0) 
-//		      {
-//		        int n = System.in.read(buffer, 0, Math.min(ni, buffer.length));
-//		        in.write(buffer, 0, n);
-//		        in.flush();
-//		      }
-//		    }
 		}
 	}
-	
-	  public static boolean isAlive(Process p) {
-		    try {
-		      p.exitValue();
-		      return false;
-		    }
-		    catch (IllegalThreadStateException e) {
-		      return true;
-		    }
-		  }
 	
 	/*
 	 * Reset the title of the project properties window when a new project 
