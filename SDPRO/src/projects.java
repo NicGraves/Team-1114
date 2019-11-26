@@ -1,8 +1,5 @@
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -16,6 +13,9 @@ import javax.swing.filechooser.FileSystemView;
 public class projects
 {
 	
+	/*
+	 * Function that utilizes a JFileChooser for a user to select a project file to open
+	 */
 	public void openProject(String saveDirectory, StringBuilder currentProject) throws WorkspaceFolderException
 	{
 
@@ -41,11 +41,17 @@ public class projects
 		}
 	}
 	
+	/*
+	 * Function that removes the current open project name when a project is closed
+	 */
 	public void closeProject(StringBuilder currentProject)
 	{
 		currentProject.setLength(0);
 	}
 	
+	/*
+	 * Function that creates anew project and stores it in the IDE workspace
+	 */
 	public void createNewProject(String saveDirectory, StringBuilder currentProject) throws IOException, NoProjectNameException, WorkspaceFolderException
 	{
 		JFrame frame = new JFrame();
@@ -54,9 +60,8 @@ public class projects
 		if(!Files.exists(path) && temp.length() != 0)
 		{
 			currentProject.setLength(0);
-			currentProject.append(temp);
+			currentProject.append(saveDirectory+"\\"+temp);
 			Files.createDirectory(path);
-			UIBuilder.projectPropertiesDisplay();
 		}
 		else if(temp.length() == 0)
 		{

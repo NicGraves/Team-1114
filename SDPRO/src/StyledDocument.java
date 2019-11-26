@@ -15,6 +15,7 @@ import javax.swing.text.StyleContext;
  *
  * @author Jared - PC
  */
+@SuppressWarnings("serial")
 public class StyledDocument extends DefaultStyledDocument 
 {
     private final StyleContext style = StyleContext.getDefaultStyleContext();
@@ -162,8 +163,14 @@ public class StyledDocument extends DefaultStyledDocument
                 //if the text we're looking at is a keyword, change it's color
                 for (String redKeyword : redKeywords) 
                 {
+                    //System.out.println(key);
+                    if(key.matches("(\\s)*" + redKeyword) && !str.equals(" ") && !str.matches("\\w"))
+                            numRedKeywords--;
                     if (txt.substring(indexLeftRed, indexRightRed).matches("(\\s)*" + redKeyword)) 
                     {
+                        if(str.equals(" ") || str.matches("\\w"))
+                            numRedKeywords--;
+                        numRedKeywords++;
                         setCharacterAttributes(indexLeftRed, indexRightRed - indexLeftRed, redColor, false);
                         break;
                     }
@@ -205,6 +212,8 @@ public class StyledDocument extends DefaultStyledDocument
             numRedKeywords = 0;
             numBlueKeywords = 0;
             super.remove(offset, length);
+            display.setText("Blue Keywords: " + numBlueKeywords + "     Red Keywords: " + numRedKeywords);
+
             return;
         }
         if(start < 0)start = 0;
@@ -212,7 +221,6 @@ public class StyledDocument extends DefaultStyledDocument
         
         String wordPrevious = txt.substring(start, lastNonwordChar(txt,offset));
         String keyPrevious = txt.substring(startRed, lastNonkeyChar(txt, offset));
-        System.out.println("wordPrevious: " + wordPrevious + " |keyPrevious: " + keyPrevious);
         super.remove(offset,length);
         
         String txt = getText(0, getLength());
@@ -228,9 +236,6 @@ public class StyledDocument extends DefaultStyledDocument
         int afterIndexRed = lastNonkeyChar(txt, offset);
         int i;
         
-        String leftHalf = txt.substring(beforeIndex, offset);
-        String rightHalf = txt.substring(offset, afterIndex);
-        
         //check if the word we're looking at is a red keyword or not. if it is, we need to change it later
         for(i = 0; i < redKeywords.length; i++)
         {
@@ -240,6 +245,11 @@ public class StyledDocument extends DefaultStyledDocument
         //check to see if it is a blue keyword or not, then change it if it is
         if (txt.substring(beforeIndex, afterIndex).matches("(\\W)*(" + blueKeywords + ")"))
             setCharacterAttributes(beforeIndex, afterIndex - beforeIndex, blueColor, false);
+            if(wordPrevious.matches("(\\W)*(" + blueKeywords + ")"))
+            {
+                numBlueKeywords--;
+            }
+        }   
         else
             setCharacterAttributes(beforeIndex, afterIndex - beforeIndex, blackColor, false);
         //check to see if we found a red keyword or not, then change it if we did

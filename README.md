@@ -11,3 +11,31 @@ Open project:
 Project -> Open Project -> Select in file chooser
 
 Note: creating a project automatically saves it to the text editors designated workspace, so there is no need for a save project button. Create new project is a combination of create and save to streamline user experience. Only a save file button is needed, which will be included in the next iteration.
+
+Create new file:
+File -> Create New File -> Type in file name 
+Must be in a project directory.
+
+Save file:
+File -> Save
+Must have file open to save.
+
+Open file:
+File -> Open -> Type in file name
+Opens file in current directory.
+
+Close file:
+File -> Close
+Closes current file.
+
+Remove file:
+File -> Remove -> Type in file name
+Deletes current file from system.
+
+Compile & Run:
+With Project and File open, press the execute button along the task bar.
+Compiles and executes the currently open file, saving it in the process.
+
+Note: keyword counter is along the bottom of the text editor.
+
+
