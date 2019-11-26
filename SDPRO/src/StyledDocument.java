@@ -292,7 +292,7 @@ public class StyledDocument extends DefaultStyledDocument
     public void remove(int offset, int length) throws BadLocationException
     {
         String txt = getText(0, getLength());
-        if(txt.charAt(offset) == '"')
+        if(txt.length()> offset && txt.charAt(offset) == '\"')
         {
             super.remove(offset,length);
             insertString(-1, getText(0, getLength()), blackColor);
