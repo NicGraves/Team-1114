@@ -16,6 +16,7 @@ import javax.swing.text.StyleContext;
  *
  * @author Jared - PC
  */
+@SuppressWarnings("serial")
 public class StyledDocument extends DefaultStyledDocument 
 {
     private JTextArea display;
@@ -178,7 +179,7 @@ public class StyledDocument extends DefaultStyledDocument
                 //if the text we're looking at is a keyword, change it's color
                 for (String redKeyword : redKeywords) 
                 {
-                    System.out.println(key);
+                    //System.out.println(key);
                     if(key.matches("(\\s)*" + redKeyword) && !str.equals(" ") && !str.matches("\\w"))
                             numRedKeywords--;
                     if (txt.substring(indexLeftRed, indexRightRed).matches("(\\s)*" + redKeyword)) 
@@ -255,9 +256,6 @@ public class StyledDocument extends DefaultStyledDocument
             beforeIndexRed = 0;
         int afterIndexRed = lastNonkeyChar(txt, offset);
         int i;
-        
-        String leftHalf = txt.substring(beforeIndex, offset);
-        String rightHalf = txt.substring(offset, afterIndex);
         
         //check if the word we're looking at is a red keyword or not. if it is, we need to change it later
         for(i = 0; i < redKeywords.length; i++)
