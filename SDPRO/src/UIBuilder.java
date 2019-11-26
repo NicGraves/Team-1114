@@ -69,13 +69,13 @@ public class UIBuilder
 	{
 		JMenu menuItem1 = new JMenu("Project"); //Create a menu named "Project"
 	    JMenu menuItem2 = new JMenu("File"); //Create a menu named "File"
-	    JMenu menuItem3 = new JMenu("Help"); //Create a menu named "Help"
+	    //JMenu menuItem3 = new JMenu("Help"); //Create a menu named "Help"
 	    JMenu menuItem4 = new JMenu("Execute"); //Create a menu named "Execute"
 	    
 	    //Add each menu to the menu bar
 	    menuBar.add(menuItem1); 
 	    menuBar.add(menuItem2);
-	    menuBar.add(menuItem3);
+	   // menuBar.add(menuItem3);
 	    menuBar.add(menuItem4);
 	    
 	    //Create a new menu item called "Open Project"
