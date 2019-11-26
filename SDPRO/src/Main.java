@@ -1,4 +1,5 @@
 import java.awt.BorderLayout;
+import java.awt.Toolkit;
 
 import javax.swing.*;
 
@@ -11,7 +12,10 @@ public class Main
 		UIBuilder u = new UIBuilder();
 		JFrame frame = new JFrame("IDE");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setSize(1000, 500);
+		Toolkit tk = Toolkit.getDefaultToolkit();
+		int xSize = ((int) tk.getScreenSize().getWidth());
+		int ySize = ((int) tk.getScreenSize().getHeight());
+		frame.setSize(xSize,ySize);
 		frame.getContentPane().add(BorderLayout.PAGE_START, u.buildMenu());
     	frame.getContentPane().add(BorderLayout.LINE_START, u.buildProjectProperties());
         frame.getContentPane().add(BorderLayout.CENTER, u.buildTextEditor());
